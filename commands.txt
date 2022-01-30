@@ -1,0 +1,14 @@
+#Una vez clonado el proyecto se debe crear un entorno virtual
+ y activarlo
+    $ virtualenv env --python==python3  #comando para linux (buscar el de windows)
+    $ source env/bin/activate           #comando para linux (buscar el de windows)
+
+#Cuando ya se creo el entorno virtual se procede a instalar 
+ todos los módulos del archivo "requirements.txt"
+    $ pip install -r requirements.txt
+
+#Para crear una nueva app al proyecto
+    $ django-admin startapp "nombre app"  #sin comillas
+ Luego se registra la nueva app en el archivo "base.py" en el arreglo "LOCAL_APPS = [ ]"
+
+
