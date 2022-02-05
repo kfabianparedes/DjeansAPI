@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5iveh@*566f+4q8jx60aelecl64dcx65vz@2=-yg^==tg094ln'
+SECRET_KEY = 'django-insecure-w4^=5&dqy2%die1(4)81x&lm_2!-=hj_6e)b74de@%1c=g@*(o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -17,7 +17,6 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
 BASE_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -47,7 +46,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'DjeansAPI.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -65,7 +64,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'DjeansAPI.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -91,11 +90,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Lima'
 
 USE_I18N = True
 
 USE_TZ = True
+
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 
 # Static files (CSS, JavaScript, Images)
@@ -107,5 +108,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
