@@ -29,6 +29,7 @@ BASE_APPS = [
 LOCAL_APPS = [
     'apps.usuarios',
     'apps.categorias',
+    'apps.sucursales',
 ]
 
 THIRD_APPS = [
@@ -36,6 +37,11 @@ THIRD_APPS = [
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
+
+CORS_ORIGIN_ALLOW_ALL=False
+CORS_ORIGIN_WHITELIST=(
+    'http://localhost:4200',
+)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -45,6 +51,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #CORDS
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
