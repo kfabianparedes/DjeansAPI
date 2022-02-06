@@ -11,10 +11,12 @@ class SucursalAPIView(APIView):
     def get(self,request):
         obtenerSucursal=list(SUCURSALES.objects.values())
         if len(obtenerSucursal)>0:
-            datos={'mensaje':"Exitoso",'resultado':obtenerSucursal}
+            datos={'code':status.HTTP_200_OK,'message':"Solicitud exitosa",'data':obtenerSucursal}
+            return Response(datos,status= status.HTTP_200_OK)
         else:
-            datos={'mensaje':"Error"}
-        return JsonResponse(datos)
+            datos={'code':status.HTTP_400_BAD_REQUEST,'message':"No hay registro de surcursales",'data':None}
+            return Response(datos,status= status.HTTP_400_BAD_REQUEST)
+
     def post(self,request):
         registro=sucursalSerializers(data=request.data)
         if registro.is_valid():
