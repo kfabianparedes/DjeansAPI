@@ -1,47 +1,10 @@
+from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-
-# class UsuarioManager(BaseUserManager):
-#     def _create_user(self, username ,password, is_staff, is_superuser, **extra_fields):
-#         usuario = self.model(
-#             username = username,
-#             is_staff = is_staff,
-#             is_superuser = is_superuser,
-#             **extra_fields
-#         )
-#         usuario.set_password(password)
-#         usuario.save(using=self.db)
-#         return usuario
-
-#     def create_user(self, username, password=None, **extra_fields):
-#         return self._create_user(username,password, False, False, **extra_fields)
-
-#     def create_superuser(self, username, password=None, **extra_fields):
-#         return self._create_user(username, password, True, True, **extra_fields)
-class UsuarioManager(BaseUserManager):
-    def create_user(self, username,email, password, **extra_fields):
-        if not username:
-            raise ValueError('The username must be set')
-        extra_fields.setdefault('is_employee', True)
-        extra_fields.setdefault('is_active', True)
-        user = self.model(username=username, email= email, **extra_fields)
-        user.set_password(password)
-        user.save()
-        return user
-    def create_superuser(self, username, email, password, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('is_employee', True)
-        #if extra_fields.get('is_staff') is not True:
-            #raise ValueError(_('Superuser must have is_staff=True.'))
-        #if extra_fields.get('is_superuser') is not True:
-            #raise ValueError(_('Superuser must have is_superuser=True.'))
-        return self.create_user(username,email, password, **extra_fields)
-
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from .managers import UsuarioManager
+from .clases import TipoDocumento, EstadoCivil
 class Usuario(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length = 255, unique = True)
-    email = models.EmailField("Email", max_length=254, unique= True)
     is_active = models.BooleanField(default = True)
     is_staff = models.BooleanField(default = False)
     is_employee = models.BooleanField(default = True)
@@ -55,7 +18,33 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'Usuarios'
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email, is_employee']
+    REQUIRED_FIELDS = ['is_employee','is_superuser']
 
     def __str__(self):
         return f'{self.username}'
+
+class InformacionPersonal(models.Model):
+    INFO_PER_ID = models.BigAutoField(verbose_name='Inf. Personal Nº',primary_key=True)
+    INFO_PER_NOMBRES = models.CharField(max_length=50, blank= True, null= True)
+    INFO_PER_APELLIDOS = models.CharField(max_length=50, blank= True, null= True)
+    INFO_PER_EMAIL = models.EmailField(max_length=50, unique= True, blank= True, null= True)
+    INFO_PER_GENERO = models.CharField(max_length=1, blank= False, null= False, default='F')
+    INFO_PER_FECHA_NACIMIENTO = models.DateField(blank=True, null= True)
+    INFO_PER_DIRECCION1 = models.TextField(max_length=100, blank= True , null= True)
+    INFO_PER_DIRECCION2 = models.TextField(max_length=100, blank= True , null= True)
+    INFO_PER_CELULAR1 = models.CharField(max_length=9, blank= True , null= True)
+    INFO_PER_CELULAR2 = models.CharField(max_length=9, blank= True , null= True)
+    INFO_PER_DOCUMENTO_IDENTIDAD = models.CharField(max_length=11, blank= True , null= True)
+    USU_ID = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete= models.CASCADE , unique= True, blank= True, null= True)
+    ESTADO_CIVIL_ID = models.OneToOneField(EstadoCivil, on_delete= models.CASCADE , unique= True, blank= True, null= True)
+    TIPO_DOC_PER_ID = models.OneToOneField(TipoDocumento, on_delete= models.CASCADE , unique= True, blank= True, null= True)
+
+    class Meta:
+        db_table = 'informacion_personal'
+        verbose_name = 'Información Personal'
+        verbose_name_plural = 'Informaciones personales'
+
+    def __str__(self):
+        return f'{self.INFO_PER_NOMBRES} {self.INFO_PER_APELLIDOS}'
+
+
