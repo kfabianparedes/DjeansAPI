@@ -7,7 +7,7 @@ from django.utils import timezone
 
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField("Nombre de usuario", max_length=255)
+    username = models.CharField("Nombre de usuario", max_length=255, unique=True)
     is_active = models.BooleanField("Activo/Inactivo", default=True)
     is_staff = models.BooleanField("Administrador", default=False)
     is_employee = models.BooleanField("Empleado", default=True)

@@ -1,8 +1,9 @@
 from django.db import models
 
+
 class EstadoCivil(models.Model):
-    ESTADO_CIVIL_ID = models.BigAutoField(verbose_name='Estado Civil ID',primary_key=True)
-    ESTADO_CIVIL_DESCRIPCION = models.CharField(verbose_name='Descripción', max_length= 30, blank= False, null= False)
+    ESTADO_CIVIL_ID = models.BigAutoField(verbose_name='Estado Civil ID', primary_key=True)
+    ESTADO_CIVIL_DESCRIPCION = models.CharField(verbose_name='Descripción', max_length=30, blank=False, null=False)
 
     class Meta:
         db_table = 'estado_civil'
@@ -11,10 +12,11 @@ class EstadoCivil(models.Model):
 
     def __str__(self):
         return self.ESTADO_CIVIL_DESCRIPCION
-    
+
+
 class TipoDocumento(models.Model):
-    TIPO_DOC_PER_ID = models.BigAutoField(verbose_name='Tipo de documento - ID',primary_key=True)
-    TIPO_DOC_PER_DESCRIPCION = models.CharField(verbose_name='Descripción', max_length= 30, blank= False, null= False)
+    TIPO_DOC_PER_ID = models.BigAutoField(verbose_name='Tipo de documento - ID', primary_key=True)
+    TIPO_DOC_PER_DESCRIPCION = models.CharField(verbose_name='Descripción', max_length=30, blank=False, null=False)
 
     class Meta:
         db_table = 'tipo_documento_personal'
