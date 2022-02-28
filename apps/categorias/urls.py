@@ -2,11 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-
-    path('categoria-list/', views.ShowAll, name='categoria-list'),
-    path('categoria-view/<int:pk>', views.ViewCategoria, name='categoria-view'),
-    path('categoria-create/', views.CreateCategoria, name='categoria-create'),
-    path('categoria-update/<int:pk>/', views.UpdateCategoria, name='categoria-update'),
-    path('categoria-delete/<int:pk>/', views.DeleteCategoria, name='categoria-delete'),
-
+    path('list/', views.CategoriaAPIView.as_view(), name='list'),
+    path('create/', views.CategoriaAPIView.as_view(), name='create'),
+    path('update/<int:pk>/', views.CategoriaAPIView.as_view(), name='update'),
+    path('delete/<int:pk>/', views.CategoriaAPIView.as_view(), name='delete'),
 ]

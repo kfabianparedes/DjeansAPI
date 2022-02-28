@@ -21,9 +21,12 @@ from apps.usuarios.views.login import Login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', Login.as_view(), name='login'),
-    path('apps/', include('apps.categorias.urls')),
+    path('categorias/', include('apps.categorias.urls')),
     path('sucursales/', include('apps.sucursales.urls')),
     path('tiendas/', include('apps.tiendas.urls')),
     path('info/', include('apps.usuarios.urls')),
+    path('colores/', include('apps.colores.urls')),
+    path('modelos/', include('apps.modelos.urls')),
+    path('tallas/', include('apps.tallas.urls')),
 
 ]

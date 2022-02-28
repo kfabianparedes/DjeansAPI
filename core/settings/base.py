@@ -33,6 +33,9 @@ LOCAL_APPS = [
     'apps.tiendas',
     'apps.marcas',
     'apps.proveedores', 
+    'apps.colores',
+    'apps.modelos',
+    'apps.tallas',
 ]
 
 THIRD_APPS = [
