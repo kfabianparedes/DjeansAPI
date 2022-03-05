@@ -9,7 +9,7 @@ from django.utils import timezone
 class Usuario(AbstractBaseUser, PermissionsMixin):
     username = models.CharField("Nombre de usuario", max_length=255, unique=True)
     is_active = models.BooleanField("Activo/Inactivo", default=True)
-    is_staff = models.BooleanField("Administrador", default=False)
+    is_staff = models.BooleanField("Administrador", default=False, )
     is_employee = models.BooleanField("Empleado", default=True)
     is_superuser = models.BooleanField("Super Usuario", default=False)
     register_date = models.DateField("Fecha creación", default=timezone.now)
@@ -38,8 +38,8 @@ class InformacionPersonal(models.Model):
     INFO_PER_DIRECCION2 = models.TextField(verbose_name='Dirección 2', max_length=100, blank=True, null=True)
     INFO_PER_CELULAR1 = models.CharField(verbose_name='Nro. Celular 1', max_length=9, blank=True, null=True)
     INFO_PER_CELULAR2 = models.CharField(verbose_name='Nro. Celular 2', max_length=9, blank=True, null=True)
-    USU_ID = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, unique=True, blank=True,
-                                  null=True, verbose_name='Usuario')
+    USUARIO = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, unique=True, blank=True,
+                                   null=True, verbose_name='Usuario')
     ESTADO_CIVIL_ID = models.OneToOneField(EstadoCivil, on_delete=models.CASCADE, unique=True, blank=True, null=True,
                                            verbose_name='Estado Civil')
     TIPO_DOC_PER_ID = models.OneToOneField(TipoDocumento, on_delete=models.CASCADE, unique=True, blank=True, null=True,

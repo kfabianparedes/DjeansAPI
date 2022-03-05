@@ -1,74 +1,150 @@
-from django.forms import ValidationError
-from django.http import JsonResponse
+from django.db import DatabaseError
 from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.parsers import JSONParser
-from .serializers import CategoriaSerializer
+from rest_framework.viewsets import GenericViewSet
+
+from core.assets.permissions.user_permission import IsAuthenticated, SuperUsuarioPermission
+from core.assets.validations.obtener_error_serializer import obtenerErrorSerializer
+from core.settings.base import BD_ERROR_MESSAGE, SUCCESS_MESSAGE
+from . import models
+from .serializers import CategoriaSerializer, CategoriaCrearSerializer
 from .models import Categoria
 
 
-# Create your views here.
+class CategoriaView(GenericViewSet):
+    model = Categoria
+    serializer_class = CategoriaSerializer
 
-class CategoriaAPIView(APIView):
-#LISTAR CATEGORIA
-    def get_object(self, pk):
-        try:
-            return Categoria.objects.get(pk=pk)
-        except Categoria.DoesNotExist:
-            datos={'code':status.HTTP_404_NOT_FOUND,'message':"ID no existe",'data':None}
-            return Response(datos,status=status.HTTP_404_NOT_FOUND)
-
-    def get(self,request):
-        obtenerCategoria=list(Categoria.objects.values())
-        if len(obtenerCategoria)>0:
-            datos={'code':status.HTTP_200_OK,'message':"SOLICITUD EXITOSA",'data':obtenerCategoria}
-            return Response(datos,status= status.HTTP_200_OK)
+    def get_permissions(self):
+        if self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'retrieve':
+            permission_classes = [IsAuthenticated, SuperUsuarioPermission]
+        elif self.action == 'create':
+            permission_classes = [IsAuthenticated, SuperUsuarioPermission]
+        elif self.action == 'update':
+            permission_classes = [IsAuthenticated, SuperUsuarioPermission]
+        elif self.action == 'partial_update':
+            permission_classes = [IsAuthenticated, SuperUsuarioPermission]
         else:
-            datos={'code':status.HTTP_400_BAD_REQUEST,'message':"NO SE ENCONTRARON REGISTROS",'data':None}
-            return Response(datos,status= status.HTTP_400_BAD_REQUEST)
+            permission_classes = [IsAuthenticated, SuperUsuarioPermission]
+        return [permission() for permission in permission_classes]
 
-    def post(self,request):
-        crearCategoria=CategoriaSerializer(data=request.data)
-        if crearCategoria.is_valid():
-            crearCategoria.save()
-            datos={'code':status.HTTP_201_CREATED,'message':"CREACIÓN EXITOSA",'data':request.data}
-            return Response(datos,status=status.HTTP_201_CREATED)
-        else:
-            datos={'code':status.HTTP_400_BAD_REQUEST,'message':crearCategoria._errors.values(),'data':None}
-            return Response(datos,status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self,request,pk):
-        #try:
-        #    cat = Categoria.objects.get(pk=pk)
-        #except Categoria.DoesNotExist:
-        #    datos={'code':status.HTTP_404_NOT_FOUND,'message':"ID no existe",'data':None}
-        #    return Response(datos,status=status.HTTP_404_NOT_FOUND)
-        #editarCategoria=JSONParser().parse(request)
-        #serializarCategoria=CategoriaSerializer(cat,data=editarCategoria)
-        #if serializarCategoria.is_valid():
-        #    serializarCategoria.save()
-        #    datos={'code':status.HTTP_200_OK,'message':"SE EDITÓ CORRECTAMENTE",'data':editarCategoria}
-        #    return Response(datos,status=status.HTTP_200_OK)
-        #else:
-        #    datos={'code':status.HTTP_500_INTERNAL_SERVER_ERROR,'message':serializarCategoria.errors.values(),'data':None}
-        #    return Response(datos,status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        editarCategoria= self.get_object(pk)
-        serializarCategoria= CategoriaSerializer(editarCategoria,data=request.data)
-        if serializarCategoria.is_valid():
-            serializarCategoria.save()
-            datos={'code':status.HTTP_200_OK,'message':"SE EDITÓ CORRECTAMENTE",'data':editarCategoria}
-            return Response(datos, status=status.HTTP_200_OK)
-        return Response(serializarCategoria.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    #ELIMINAR CATEGORIA
-    def delete(self,request,pk):
+    def retrieve(self):
         try:
-            idCategoria = Categoria.objects.get(pk=pk)
+            return self.get_object()
+        except DatabaseError:
+            respuesta = {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': BD_ERROR_MESSAGE,
+                'data': None
+            }
+            return Response(respuesta, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request):
+        try:
+            if request.user.is_superuser:
+                queryset = models.Categoria.objects.all()
+                categorias_serializer = CategoriaSerializer(queryset, many=True)
+                respuesta = {
+                    'code': status.HTTP_200_OK,
+                    'message': SUCCESS_MESSAGE,
+                    'data': categorias_serializer.data
+                }
+                return Response(respuesta, status=status.HTTP_200_OK)
+            else:
+                queryset = models.Categoria.objects.filter(cat_estado=True)
+                categorias_serializer = CategoriaSerializer(queryset, many=True)
+                respuesta = {
+                    'code': status.HTTP_200_OK,
+                    'message': SUCCESS_MESSAGE,
+                    'data': categorias_serializer.data
+                }
+                return Response(respuesta, status=status.HTTP_200_OK)
+
+        except DatabaseError:
+            respuesta = {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': BD_ERROR_MESSAGE,
+                'data': None
+            }
+            return Response(respuesta, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def create(self, request):
+        crear_categoria_serializer = CategoriaCrearSerializer(data=request.data)
+        if crear_categoria_serializer.is_valid():
+            crear_categoria_serializer.create(request.data)
+            respuesta = {
+                'code': status.HTTP_200_OK,
+                'message': SUCCESS_MESSAGE,
+                'data': crear_categoria_serializer.data
+            }
+            return Response(respuesta, status=status.HTTP_200_OK)
+        else:
+            respuesta = {
+                'code': status.HTTP_400_BAD_REQUEST,
+                'message': obtenerErrorSerializer(crear_categoria_serializer),
+                'data': None
+            }
+            return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, pk=None):  # Faltaaa
+        try:
+            if self.get_object():
+                print("si entra")
+                print(self.get_object())
+                categoria_serializer = self.serializer_class(data=request.data)
+                if categoria_serializer.is_valid():
+                    categoria_serializer.update(instance=self.get_object(), data=request.data)
+                    respuesta = {
+                        'code': status.HTTP_200_OK,
+                        'message': SUCCESS_MESSAGE,
+                        'data': categoria_serializer.data
+                    }
+                    return Response(respuesta, status=status.HTTP_200_OK)
+                else:
+                    respuesta = {
+                        'code': status.HTTP_400_BAD_REQUEST,
+                        'message': obtenerErrorSerializer(categoria_serializer),
+                        'data': None
+                    }
+                    return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                respuesta = {
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': "La categoría no existe.",
+                    'data': None
+                }
+                return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)
+
+        except DatabaseError:
+            respuesta = {
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': BD_ERROR_MESSAGE,
+                'data': None
+            }
+            return Response(respuesta, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            idCategoria = models.Categoria.objects.get(pk=self.kwargs['pk'])
             idCategoria.delete()
-            datos={'code':status.HTTP_200_OK,'message':"Categoría Eliminada",'data':None}
+            datos = {'code': status.HTTP_200_OK, 'message': "Categoría Eliminada", 'data': None}
             print("ELIMINACIÓN EXITOSA")
-            return Response(datos,status=status.HTTP_200_OK)
+            return Response(datos, status=status.HTTP_200_OK)
         except Categoria.DoesNotExist:
-            datos={'code':status.HTTP_404_NOT_FOUND,'message':"ID no existe",'data':None}
-            return Response(datos,status=status.HTTP_404_NOT_FOUND)
+            datos = {'code': status.HTTP_404_NOT_FOUND, 'message': "ID no existe", 'data': None}
+            return Response(datos, status=status.HTTP_404_NOT_FOUND)
+
+    def get_object(self):
+        try:
+            categoria = Categoria.objects.get(pk=self.kwargs['pk'])
+            serializer_categoria = CategoriaSerializer(categoria)
+            return serializer_categoria.data
+        except Categoria.DoesNotExist:
+            respuesta = {
+                'code': status.HTTP_400_BAD_REQUEST,
+                'message': "La categoría no existe.",
+                'data': None
+            }
+            return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)

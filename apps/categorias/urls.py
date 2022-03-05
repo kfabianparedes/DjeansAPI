@@ -1,9 +1,8 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path('list/', views.CategoriaAPIView.as_view(), name='list'),
-    path('create/', views.CategoriaAPIView.as_view(), name='create'),
-    path('update/<int:pk>/', views.CategoriaAPIView.as_view(), name='update'),
-    path('delete/<int:pk>/', views.CategoriaAPIView.as_view(), name='delete'),
-]
+from .views import CategoriaView
+
+router = DefaultRouter()
+router.register(r'', CategoriaView, basename='usuarios')
+
+urlpatterns = router.urls
