@@ -106,9 +106,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'core.assets.permissions.user_permission.IsAuthenticated',
     ],
-    'USER_DETAILS_SERIALIZER': 'apps.usuarios.serializer.usuario.serializer.UsuarioSerializer'
+    'USER_DETAILS_SERIALIZER': 'apps.usuarios.serializers.usuario_serializer.UsuarioSerializer'
 }
 
 SIMPLE_JWT = {

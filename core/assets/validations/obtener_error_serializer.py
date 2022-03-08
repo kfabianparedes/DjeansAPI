@@ -1,2 +1,3 @@
-def obtenerErrorSerializer(serializer):
-    return list(serializer.errors.values())[0][0]
+def obtenerErrorSerializer(value):
+    return list(value.errors.values())[0][0]
+

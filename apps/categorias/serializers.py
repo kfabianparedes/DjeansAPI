@@ -39,7 +39,7 @@ class CategoriaCrearSerializer(Serializer):
         if type(value) == bool:
             return value
         else:
-            raise serializers.ValidationError("La estado de la categoría solo puede ser Verdadero o Falso")
+            raise serializers.ValidationError("El estado de la categoría solo puede ser Verdadero o Falso")
 
     def create(self, data):
         descripcion = str(data['cat_descripcion']).upper()
@@ -53,11 +53,16 @@ class CategoriaSerializer(ModelSerializer):
         fields = ['cat_id', 'cat_descripcion', 'cat_estado']
 
     def update(self, instance, data):
-        print(instance)
-        instance.cat_descripcion = data.get('cat_descripcion', instance.cat_descripcion)
-        instance.cat_estado = data.get('cat_estado', instance.cat_estado)
-        instance.save()
-        return instance
+        pass
+        # print('instancia del objeto')
+        # print(instance)
+        # print('nueva data')
+        # print(data)
+        # print(data.get('cat_descripcion'))
+        # print(instance.get('cat_descripcion'))
+        # instance.cat_descripcion = data.get('cat_descripcion', instance.get('cat_descripcion'))
+        # instance.cat_estado = data.get('cat_estado', instance.get('cat_estado'))
+        # instance.save()
 
     def validate_cat_descripcion(self, value):
 
@@ -82,3 +87,20 @@ class CategoriaSerializer(ModelSerializer):
             return value
         else:
             raise serializers.ValidationError("La estado de la categoría solo puede ser Verdadero o Falso")
+
+
+class CategoriaActualizarSerializer(Serializer):
+    cat_id = serializers.IntegerField()
+    cat_descripcion = serializers.CharField(required=True,
+                                            error_messages={
+                                                "required": "El nombre de la categoría es requerido.",
+                                                "blank": "El nombre de la categoría no debe estar vacío.",
+                                                "invalid": "El nombre de la categoría debe ser válido.",
+                                            })
+    cat_estado = serializers.BooleanField(required=True,
+                                          error_messages={
+                                              "required": "El estado de la categoría es requerido.",
+                                              "blank": "El estado de la categoría no debe estar vacío.",
+                                              "invalid": "El estado de la categoría debe ser válido.",
+                                          })
+

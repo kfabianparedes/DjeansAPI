@@ -1,9 +1,8 @@
-from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated , BasePermission
 
 
-class UsuarioPropioPermission(permissions.BasePermission):
+class UsuarioPropioPermission(BasePermission):
     message = 'El usuario solo puede ser actualizado por el mismo.'
 
     def has_object_permission(self, request, view, obj):

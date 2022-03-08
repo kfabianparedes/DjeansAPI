@@ -12,8 +12,6 @@ from .models import Categoria
 
 
 class CategoriaView(GenericViewSet):
-    model = Categoria
-    serializer_class = CategoriaSerializer
 
     def get_permissions(self):
         if self.action == 'list':
@@ -71,22 +69,33 @@ class CategoriaView(GenericViewSet):
             return Response(respuesta, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def create(self, request):
-        crear_categoria_serializer = CategoriaCrearSerializer(data=request.data)
-        if crear_categoria_serializer.is_valid():
-            crear_categoria_serializer.create(request.data)
+        try:
+
+            print(request.data)
+            crear_categoria_serializer = CategoriaCrearSerializer(data=request.data)
+            if crear_categoria_serializer.is_valid():
+                crear_categoria_serializer.create(request.data)
+                respuesta = {
+                    'code': status.HTTP_200_OK,
+                    'message': SUCCESS_MESSAGE,
+                    'data': crear_categoria_serializer.data
+                }
+                return Response(respuesta, status=status.HTTP_200_OK)
+            else:
+                respuesta = {
+                    'code': status.HTTP_400_BAD_REQUEST,
+                    'message': obtenerErrorSerializer(crear_categoria_serializer),
+                    'data': None
+                }
+                return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)
+
+        except DatabaseError:
             respuesta = {
-                'code': status.HTTP_200_OK,
-                'message': SUCCESS_MESSAGE,
-                'data': crear_categoria_serializer.data
-            }
-            return Response(respuesta, status=status.HTTP_200_OK)
-        else:
-            respuesta = {
-                'code': status.HTTP_400_BAD_REQUEST,
-                'message': obtenerErrorSerializer(crear_categoria_serializer),
+                'code': status.HTTP_500_INTERNAL_SERVER_ERROR,
+                'message': BD_ERROR_MESSAGE,
                 'data': None
             }
-            return Response(respuesta, status=status.HTTP_400_BAD_REQUEST)
+            return Response(respuesta, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def update(self, request, pk=None):  # Faltaaa
         try:
@@ -95,6 +104,8 @@ class CategoriaView(GenericViewSet):
                 print(self.get_object())
                 categoria_serializer = self.serializer_class(data=request.data)
                 if categoria_serializer.is_valid():
+                    print('objeto request')
+                    print(request.data)
                     categoria_serializer.update(instance=self.get_object(), data=request.data)
                     respuesta = {
                         'code': status.HTTP_200_OK,
