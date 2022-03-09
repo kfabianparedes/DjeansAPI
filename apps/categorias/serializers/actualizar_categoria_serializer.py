@@ -1,9 +1,17 @@
 from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer, Serializer
-from .models import Categoria
+from rest_framework.serializers import Serializer
+
+from apps.categorias.models import Categoria
+from core.assets.validations.obtener_error_serializer import validarEsNumerico
 
 
-class CategoriaCrearSerializer(Serializer):
+class CategoriaActualizarSerializer(Serializer):
+    cat_id = serializers.IntegerField(required=True,
+                                      error_messages={
+                                          "required": "El ID de la categoría es requerido.",
+                                          "blank": "El ID de la categoría no debe estar vacío.",
+                                          "invalid": "El ID de la categoría debe ser válido.",
+                                      })
     cat_descripcion = serializers.CharField(required=True,
                                             error_messages={
                                                 "required": "El nombre de la categoría es requerido.",
@@ -18,11 +26,10 @@ class CategoriaCrearSerializer(Serializer):
                                           })
 
     def validate_cat_descripcion(self, value):
-
         if len(str.strip(value)) > 4:
             if len(str.strip(value)) <= 30:
                 if str(value).isalpha():
-                    nombre_categoria = Categoria.objects.filter(cat_descripcion=value)
+                    nombre_categoria = Categoria.objects.filter(cat_descripcion=value).exclude(cat_id=self.instance.cat_id)
                     if not nombre_categoria.exists():
                         return value
                     else:
@@ -41,35 +48,31 @@ class CategoriaCrearSerializer(Serializer):
         else:
             raise serializers.ValidationError("El estado de la categoría solo puede ser Verdadero o Falso")
 
-    def create(self, data):
-        descripcion = str(data['cat_descripcion']).upper()
-        categoria_nueva = Categoria(cat_descripcion=descripcion, cat_estado=True)
-        categoria_nueva.save()
-
-
-class CategoriaSerializer(ModelSerializer):
-    class Meta:
-        model = Categoria
-        fields = ['cat_id', 'cat_descripcion', 'cat_estado']
-
     def update(self, instance, data):
-        pass
-        # print('instancia del objeto')
-        # print(instance)
-        # print('nueva data')
-        # print(data)
-        # print(data.get('cat_descripcion'))
-        # print(instance.get('cat_descripcion'))
-        # instance.cat_descripcion = data.get('cat_descripcion', instance.get('cat_descripcion'))
-        # instance.cat_estado = data.get('cat_estado', instance.get('cat_estado'))
-        # instance.save()
+        instance.cat_descripcion = str(data.get('cat_descripcion', instance.cat_descripcion)).upper()
+        instance.cat_estado = data.get('cat_estado', instance.cat_estado)
+        return instance.save()
+
+
+class CategoriaActualizarParcialSerializer(Serializer):
+    cat_descripcion = serializers.CharField(required=False,
+                                            error_messages={
+                                                "required": "El nombre de la categoría es requerido.",
+                                                "blank": "El nombre de la categoría no debe estar vacío.",
+                                                "invalid": "El nombre de la categoría debe ser válido.",
+                                            })
+    cat_estado = serializers.BooleanField(required=False,
+                                          error_messages={
+                                              "required": "El estado de la categoría es requerido.",
+                                              "blank": "El estado de la categoría no debe estar vacío.",
+                                              "invalid": "El estado de la categoría debe ser válido.",
+                                          })
 
     def validate_cat_descripcion(self, value):
-
         if len(str.strip(value)) > 4:
             if len(str.strip(value)) <= 30:
                 if str(value).isalpha():
-                    nombre_categoria = Categoria.objects.filter(cat_descripcion=value)
+                    nombre_categoria = Categoria.objects.filter(cat_descripcion=value).exclude(cat_id=self.instance.cat_id)
                     if not nombre_categoria.exists():
                         return value
                     else:
@@ -86,21 +89,9 @@ class CategoriaSerializer(ModelSerializer):
         if type(value) == bool:
             return value
         else:
-            raise serializers.ValidationError("La estado de la categoría solo puede ser Verdadero o Falso")
+            raise serializers.ValidationError("El estado de la categoría solo puede ser Verdadero o Falso")
 
-
-class CategoriaActualizarSerializer(Serializer):
-    cat_id = serializers.IntegerField()
-    cat_descripcion = serializers.CharField(required=True,
-                                            error_messages={
-                                                "required": "El nombre de la categoría es requerido.",
-                                                "blank": "El nombre de la categoría no debe estar vacío.",
-                                                "invalid": "El nombre de la categoría debe ser válido.",
-                                            })
-    cat_estado = serializers.BooleanField(required=True,
-                                          error_messages={
-                                              "required": "El estado de la categoría es requerido.",
-                                              "blank": "El estado de la categoría no debe estar vacío.",
-                                              "invalid": "El estado de la categoría debe ser válido.",
-                                          })
-
+    def update(self, instance, data):
+        instance.cat_descripcion = str(data.get('cat_descripcion', instance.cat_descripcion)).upper()
+        instance.cat_estado = data.get('cat_estado', instance.cat_estado)
+        return instance.save()

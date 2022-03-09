@@ -36,7 +36,7 @@ class SuperUsuarioPermission(IsAdminUser):
             raise permision
 
 
-class IsAuthenticated(IsAuthenticated):
+class EstaAutenticado(IsAuthenticated):
     # Declaro la respuesta que deseo para este permiso
     respuesta = {
         "code": 401,
