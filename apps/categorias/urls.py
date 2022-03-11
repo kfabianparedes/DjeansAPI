@@ -1,8 +1,8 @@
 from rest_framework.routers import DefaultRouter
 
-from .views import CategoriaView
+from .views.categoria_view import CategoriaView
 
 router = DefaultRouter()
-router.register(r'', CategoriaView, basename='usuarios')
+router.register(r'', CategoriaView, basename='categorias')
 
 urlpatterns = router.urls

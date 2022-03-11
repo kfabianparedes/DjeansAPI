@@ -1,25 +1,21 @@
-"""core URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
 from django.urls import path, include
-from apps.usuarios.views.login_view import Login, Logout
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+from rest_framework.routers import DefaultRouter
+
+from apps.usuarios.views.autenticacion.login_view import Login
+from apps.usuarios.views.autenticacion.logout_view import Logout
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
+
+from apps.usuarios.views.estado_civil.estado_civil_view import EstadoCivilView
+from apps.usuarios.views.informacion_personal.informacion_personal_view import InformacionPersonalView
+from apps.usuarios.views.tipo_de_documento.tipo_de_documento_view import TipoDeDocumentoView
+
+router = DefaultRouter()
+router.register('tipos-de-documento', TipoDeDocumentoView, basename='tiposDeDocumento')
+router.register('informacion-personal', InformacionPersonalView, basename='informacionPersonal')
+router.register('estado-civil', EstadoCivilView, basename='estadoCivil')
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -34,4 +30,4 @@ urlpatterns = [
     path('modelos/', include('apps.modelos.urls')),
     path('tallas/', include('apps.tallas.urls')),
 
-]
+] + router.urls

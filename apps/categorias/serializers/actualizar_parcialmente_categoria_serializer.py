@@ -4,20 +4,14 @@ from rest_framework.serializers import Serializer
 from apps.categorias.models import Categoria
 
 
-class CategoriaActualizarSerializer(Serializer):
-    cat_id = serializers.IntegerField(required=True,
-                                      error_messages={
-                                          "required": "El ID de la categoría es requerido.",
-                                          "blank": "El ID de la categoría no debe estar vacío.",
-                                          "invalid": "El ID de la categoría debe ser válido.",
-                                      })
-    cat_descripcion = serializers.CharField(required=True,
+class CategoriaActualizarParcialSerializer(Serializer):
+    cat_descripcion = serializers.CharField(required=False,
                                             error_messages={
                                                 "required": "El nombre de la categoría es requerido.",
                                                 "blank": "El nombre de la categoría no debe estar vacío.",
                                                 "invalid": "El nombre de la categoría debe ser válido.",
                                             })
-    cat_estado = serializers.BooleanField(required=True,
+    cat_estado = serializers.BooleanField(required=False,
                                           error_messages={
                                               "required": "El estado de la categoría es requerido.",
                                               "blank": "El estado de la categoría no debe estar vacío.",
