@@ -34,7 +34,7 @@ class PasswordView(GenericViewSet):
                             if user.exists():
                                 RefreshToken.for_user(user.first())  # Actualiza el token del usuario
                                 password_serializer.update(usuario_obtenido, request.data)
-                                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE)
+                                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, success=True)
                             else:
                                 mensaje = "Hubo un error actualizando la contraseña. No se pudo obtener el usuario."
                                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)

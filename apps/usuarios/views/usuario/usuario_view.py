@@ -31,7 +31,7 @@ class UsuarioView(GenericViewSet):
             user_serializer = UsuarioRegistrarSerializer(data=request.data)
             if user_serializer.is_valid():  # raise_exception=True es para retornar directamente la lista de errores en json
                 user_serializer.create(request.data)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(user_serializer))
         except DatabaseError:
@@ -41,7 +41,7 @@ class UsuarioView(GenericViewSet):
         try:
             queryset = Usuario.objects.all()
             user_serializer = UsuarioSerializer(queryset, many=True)
-            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data)
+            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -52,7 +52,7 @@ class UsuarioView(GenericViewSet):
             if validarEsNumerico(usu_id) and validarEsMayorQueCero(usu_id):
                 usuario_obtenido = Usuario.objects.get(id=usu_id)
                 usuario_serializer = UsuarioSerializer(usuario_obtenido)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, usuario_serializer.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, usuario_serializer.data, True)
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -70,7 +70,7 @@ class UsuarioView(GenericViewSet):
                     usuario_serializer = UsuarioActualizarSerializer(usuario_obtenido, data=request.data)
                     if usuario_serializer.is_valid():
                         usuario_serializer.update(usuario_obtenido, request.data)
-                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, usuario_serializer.data)
+                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, usuario_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,message=obtenerErrorSerializer(usuario_serializer))
                 else:

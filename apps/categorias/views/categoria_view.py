@@ -38,7 +38,7 @@ class CategoriaView(GenericViewSet):
             if validarEsNumerico(cat_id_buscado) and validarEsMayorQueCero(cat_id_buscado):
                 categoria_obtenida = Categoria.objects.get(cat_id=cat_id_buscado)
                 categoria_serializar = CategoriaSerializer(categoria_obtenida)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializar.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializar.data, True)
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -52,11 +52,11 @@ class CategoriaView(GenericViewSet):
             if request.user.is_superuser:
                 queryset = models.Categoria.objects.all()
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
             else:
                 queryset = models.Categoria.objects.filter(cat_estado=True)
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -65,7 +65,7 @@ class CategoriaView(GenericViewSet):
             crear_categoria_serializer = CategoriaCrearSerializer(data=request.data)
             if crear_categoria_serializer.is_valid():
                 crear_categoria_serializer.create(request.data)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_categoria_serializer.data)
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_categoria_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                      message=obtenerErrorSerializer(crear_categoria_serializer))
@@ -81,7 +81,7 @@ class CategoriaView(GenericViewSet):
                     categoria_serializer = CategoriaActualizarSerializer(categoria_obtenida, data=request.data)
                     if categoria_serializer.is_valid():
                         categoria_serializer.update(categoria_obtenida, request.data)
-                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, categoria_serializer.data)
+                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, categoria_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                              message=obtenerErrorSerializer(categoria_serializer))
@@ -104,7 +104,7 @@ class CategoriaView(GenericViewSet):
                 categoria_serializer = CategoriaActualizarParcialSerializer(categoria_obtenida, data=request.data)
                 if categoria_serializer.is_valid():
                     categoria_serializer.update(categoria_obtenida, request.data)
-                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializer.data)
+                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializer.data, True)
                 else:
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                          message=obtenerErrorSerializer(categoria_serializer))
@@ -123,7 +123,7 @@ class CategoriaView(GenericViewSet):
                 categoria_obtenida = Categoria.objects.filter(cat_id=cat_id_buscado).update(cat_estado=False)
                 print(categoria_obtenida)
                 if categoria_obtenida == 1:
-                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE)
+                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, message=True)
                 else:
                     mensaje = 'La categoría no existe.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)

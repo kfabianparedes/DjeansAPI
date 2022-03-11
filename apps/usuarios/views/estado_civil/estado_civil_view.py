@@ -17,6 +17,6 @@ class EstadoCivilView(GenericViewSet):
     def list(self, request):
         try:
             estado_civil_serializer = self.serializer_class(self.queryset, many=True)
-            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, estado_civil_serializer.data)
+            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, estado_civil_serializer.data, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)

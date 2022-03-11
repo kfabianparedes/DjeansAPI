@@ -21,9 +21,9 @@ class Logout(GenericAPIView):
             if user.exists():
                 RefreshToken.for_user(user.first())
                 message = "Sesión cerrada correctamente."
-                return respuestaJson(status.HTTP_200_OK, message)
+                return respuestaJson(status.HTTP_200_OK, message, success=True)
             else:
                 message = "No existe este usuario."
                 return respuestaJson(status.HTTP_400_BAD_REQUEST, message)
         else:
-            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(logout_serializer))
+            return respuestaJson(status.HTTP_400_BAD_REQUEST, obtenerErrorSerializer(logout_serializer))

@@ -40,7 +40,7 @@ class Login(TokenObtainPairView):
                                 'username': user_serializer.data.get('username'),
                                 'id': user_serializer.data.get('id'),
                             }
-                            return respuestaJson(status.HTTP_200_OK, mensaje, data)
+                            return respuestaJson(status.HTTP_200_OK, mensaje, data, True)
                         else:
                             mensaje = "Hubo un error al obtener los tokens de autorización."
                             return respuestaJson(code=status.HTTP_401_UNAUTHORIZED, message=mensaje)
