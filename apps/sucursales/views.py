@@ -12,7 +12,7 @@ from apps.sucursales.serializers import sucursalSerializers
 # Create your views here.
 class SucursalAPIView(APIView):
     def get(self,request):
-        obtenerSucursal=list(SUCURSALES.objects.values())
+        obtenerSucursal=list(SUCURSALES.objects.values().filter(SUC_ESTADO=True))
         if len(obtenerSucursal)>0:
             datos={'code':status.HTTP_200_OK,'message':"Solicitud exitosa",'data':obtenerSucursal}
             return Response(datos,status= status.HTTP_200_OK)

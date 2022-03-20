@@ -68,7 +68,7 @@ class CategoriaView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_categoria_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                     message=obtenerErrorSerializer(crear_categoria_serializer))
+                                    message=obtenerErrorSerializer(crear_categoria_serializer))
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -84,7 +84,7 @@ class CategoriaView(GenericViewSet):
                         return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, categoria_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                             message=obtenerErrorSerializer(categoria_serializer))
+                                            message=obtenerErrorSerializer(categoria_serializer))
                 else:
                     mensaje = 'Los parámetros y el ID enviado deben coincidir.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -107,7 +107,7 @@ class CategoriaView(GenericViewSet):
                     return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializer.data, True)
                 else:
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                         message=obtenerErrorSerializer(categoria_serializer))
+                                        message=obtenerErrorSerializer(categoria_serializer))
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
