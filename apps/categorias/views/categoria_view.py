@@ -1,4 +1,4 @@
-from django.db import DatabaseError
+from django.db import DatabaseError, transaction
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
 
@@ -50,11 +50,11 @@ class CategoriaView(GenericViewSet):
     def list(self, request):
         try:
             if request.user.is_superuser:
-                queryset = models.Categoria.objects.all()
+                queryset = models.Categoria.objects.all().order_by('-cat_estado')
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
             else:
-                queryset = models.Categoria.objects.filter(cat_estado=True)
+                queryset = models.Categoria.objects.filter(cat_estado=True).order_by('-cat_estado')
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
         except DatabaseError:
@@ -120,10 +120,11 @@ class CategoriaView(GenericViewSet):
         try:
             cat_id_buscado = self.kwargs['pk']
             if validarEsNumerico(cat_id_buscado) and validarEsMayorQueCero(cat_id_buscado):
-                categoria_obtenida = Categoria.objects.filter(cat_id=cat_id_buscado).update(cat_estado=False)
-                print(categoria_obtenida)
+                categoria_obtenida = Categoria.objects.get(cat_id=cat_id_buscado)
+                categoria_actualizada = CategoriaSerializer(categoria_obtenida)
+                categoria_obtenida = Categoria.objects.filter(cat_id=cat_id_buscado).update(cat_estado=not categoria_actualizada.data.get('cat_estado'))
                 if categoria_obtenida == 1:
-                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, message=True)
+                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
                 else:
                     mensaje = 'La categoría no existe.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)

@@ -11,6 +11,7 @@ from core.assets.validations.obtener_error_serializer import obtenerErrorSeriali
 
 class Logout(GenericAPIView):
     permission_classes = [MetodoPostSeguroPermission]
+    serializer_class = LogoutSerializer
 
     def post(self, request):
         username = request.data.get('username', '')

@@ -35,8 +35,8 @@ class Login(TokenObtainPairView):
                                 mensaje += " No se pudo actualizar el último inicio de sesión."
                             user_serializer = UsuarioSerializer(user)
                             data = {
-                                'token': login_serializer.validated_data.get('access'),
-                                'refresh_token': login_serializer.validated_data.get('refresh'),
+                                'access': login_serializer.validated_data.get('access'),
+                                'refresh': login_serializer.validated_data.get('refresh'),
                                 'username': user_serializer.data.get('username'),
                                 'id': user_serializer.data.get('id'),
                             }
@@ -48,7 +48,7 @@ class Login(TokenObtainPairView):
                         mensaje = "Hubo un error al obtener los tokens de autorización."
                         return respuestaJson(code=status.HTTP_401_UNAUTHORIZED, message=mensaje)
                 else:
-                    mensaje = "Las credenciales son incorrectas o el usuario no está activo, contácte al administrador."
+                    mensaje = "Las credenciales son incorrectas o el usuario no está activo, Póngase en contacto con el administrador."
                     return respuestaJson(code=status.HTTP_401_UNAUTHORIZED, message=mensaje)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(login_serializer))

@@ -39,7 +39,7 @@ class UsuarioView(GenericViewSet):
 
     def list(self, request):
         try:
-            queryset = Usuario.objects.all()
+            queryset = Usuario.objects.all().exclude(username=request.user)
             user_serializer = UsuarioSerializer(queryset, many=True)
             return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data, True)
         except DatabaseError:
@@ -81,5 +81,25 @@ class UsuarioView(GenericViewSet):
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
         except Usuario.DoesNotExist:
             return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="El usuario no está registrado.")
+        except DatabaseError:
+            return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
+        
+        
+    def destroy(self, request, pk=None):
+        try:
+            usu_id_buscado = self.kwargs['pk']
+            if validarEsNumerico(usu_id_buscado) and validarEsMayorQueCero(usu_id_buscado):
+                usuario_obtenido = Categoria.objects.filter(id=usu_id_buscado).update(cat_estado=False)
+                print(usuario_obtenido)
+                if usuario_obtenido == 1:
+                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, message=True)
+                else:
+                    mensaje = 'La categoría no existe.'
+                    return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+            else:
+                mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
+                return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+        except Categoria.DoesNotExist:
+            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La categoría no existe.")
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
