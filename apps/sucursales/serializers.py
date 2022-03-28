@@ -33,12 +33,16 @@ class sucursalSerializers(serializers.ModelSerializer):
         
     def validate_SUC_NOMBRE(self, attrs):
         # if (attrs['SUC_NOMBRE']):
-        if (len(str.strip(attrs))==0):
-            raise serializers.ValidationError("EL CAMPO NOMBRE NO DEBE ESTAR VACIO !!!")
-        elif (len(str.strip(attrs))>0 and len(str.strip(attrs))<10):
-            raise serializers.ValidationError("EL CAMPO NOMBRE NO SUPERA LOS 10 CARACTERES")
-        return attrs
+        # if (str.strip(attrs).isalpha()):
+            if (len(str.strip(attrs))==0):
+                raise serializers.ValidationError("EL CAMPO NOMBRE NO DEBE ESTAR VACIO !!!")
+            elif (len(str.strip(attrs))>0 and len(str.strip(attrs))<30):
+                raise serializers.ValidationError("EL CAMPO NOMBRE NO SUPERAR LOS 30 CARACTERES")
+            return attrs
+        # else:
+        #     raise serializers.ValidationError("EL CAMPO NOMBRE SOLO DEBE CONTENER LETRAS")
+        
     def validate_SUC_DIRECCION(self, attrs):
-        if (len(str.strip(attrs))>0 and len(str.strip(attrs))<10):
-            raise serializers.ValidationError("EL CAMPO direccion NO SUPERA LOS 10 CARACTERES")
+        if (len(str.strip(attrs))>0 and len(str.strip(attrs))<30):
+            raise serializers.ValidationError("EL CAMPO direccion NO SUPERA LOS 30 CARACTERES")
         return super().validate(attrs)
