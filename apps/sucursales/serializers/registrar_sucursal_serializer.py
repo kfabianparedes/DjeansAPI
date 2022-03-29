@@ -1,5 +1,3 @@
-from typing_extensions import Required
-from flask import request
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
