@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TALLA
+from apps.tallas.models import Talla
 
 # Register your models here.
-admin.site.register(TALLA)
+admin.site.register(Talla)

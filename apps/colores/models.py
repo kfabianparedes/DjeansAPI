@@ -1,10 +1,12 @@
 from django.db import models
 
 # Create your models here.
-class COLOR(models.Model):
-    COL_ID = models.BigAutoField(primary_key=True, unique=True)
-    COL_DESCRIPCION = models.CharField(max_length=50)
-    COL_ESTADO = models.BooleanField(default=True)
+
+
+class Color(models.Model):
+    col_id = models.BigAutoField(primary_key=True, unique=True)
+    col_descripcion = models.CharField(max_length=30)
+    col_estado = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'color'
@@ -12,4 +14,4 @@ class COLOR(models.Model):
         verbose_name_plural = 'Colores'
 
     def _str_(self):
-        return self.COL_DESCRIPCION
+        return self.col_descripcion

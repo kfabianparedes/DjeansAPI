@@ -1,9 +1,9 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    path('list/', views.TallaAPIView.as_view(), name='list'),
-    path('create/', views.TallaAPIView.as_view(), name='create'),
-    path('update/<int:pk>/', views.TallaAPIView.as_view(), name='update'),
-    path('delete/<int:pk>/', views.TallaAPIView.as_view(), name='delete'),
-]
+from .views import TallaView
+
+router = DefaultRouter()
+
+router.register(r'',TallaView, basename='tallas')
+
+urlpatterns = router.urls
