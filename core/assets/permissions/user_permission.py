@@ -69,6 +69,7 @@ class MetodoSegurosPermission(BasePermission):
             permision.detail = self.respuesta
             raise permision
 
+# Para denegar a las peticiones que no necesitamos en nuestro view
 class MetodoNoPermitidoPermission(BasePermission):
     respuesta = {
         "code": status.HTTP_405_METHOD_NOT_ALLOWED,
@@ -76,6 +77,7 @@ class MetodoNoPermitidoPermission(BasePermission):
         "data": None
     }
     def has_permission(self, request, view):
+
         permision = MethodNotAllowed(method=request.method)
         permision.detail = self.respuesta
         raise permision

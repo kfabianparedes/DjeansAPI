@@ -1,10 +1,15 @@
 from django.db import models
 
-# Create your models here.
-class MARCAS(models.Model):
-    MAR_ID=models.AutoField(primary_key=True,verbose_name='MAR_ID')
-    MAR_DESCRIPCION=models.CharField(max_length=50)
-    MAR_ESTADO=models.BooleanField(default=True)
+
+class Marca(models.Model):
+    mar_id = models.AutoField(primary_key=True, unique=True)
+    mar_descripcion = models.CharField(max_length=30)
+    mar_estado = models.BooleanField(default=True)
+
     class Meta:
-        ordering=["MAR_ID"]
-        db_table='marca'
+        db_table = 'marca'
+        verbose_name = 'Marca'
+        verbose_name_plural = 'Marcas'
+
+    def _str_(self):
+        return self.mar_descripcion

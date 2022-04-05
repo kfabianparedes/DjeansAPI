@@ -1,10 +1,9 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 
-from apps.marcas.views import MarcaAPIView
+from apps.marcas.views import MarcaView
 
-urlpatterns = [
-    path('lista/',MarcaAPIView.as_view(),name='listaTotalMarca'),
-    path('crear/',MarcaAPIView.as_view(),name='crearMarca'),
-    path('editar/<int:pk>/',MarcaAPIView.as_view(),name='editarMarca'),
-    path('eliminar/<int:pk>/',MarcaAPIView.as_view(),name='eliminarMarca')
-]
+router = DefaultRouter()
+router.register(r'', MarcaView, basename='marcas')
+
+urlpatterns = router.urls

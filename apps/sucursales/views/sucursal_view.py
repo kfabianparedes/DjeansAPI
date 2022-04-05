@@ -13,6 +13,7 @@ from apps.sucursales.serializers.actualizar_sucursal_serializer import SucursalA
 from apps.sucursales.serializers.sucursal_serializer import SucursalSerializer
 from apps.sucursales.serializers.registrar_sucursal_serializer import SucursalCrearSerializer
 
+
 class SucursalView(GenericViewSet):
     serializer_class = SucursalSerializer
 
@@ -31,7 +32,6 @@ class SucursalView(GenericViewSet):
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         return [permission() for permission in permission_classes]
 
-
     def list(self, request):
         try:
             if request.user.is_superuser:
@@ -44,7 +44,7 @@ class SucursalView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, sucursales_serializer.data, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
-    
+
     def create(self, request):
         try:
             crear_sucursal_serializer = SucursalCrearSerializer(data=request.data)
@@ -53,7 +53,7 @@ class SucursalView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_sucursal_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                    message=obtenerErrorSerializer(crear_sucursal_serializer))
+                                     message=obtenerErrorSerializer(crear_sucursal_serializer))
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -69,7 +69,7 @@ class SucursalView(GenericViewSet):
                         return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, sucursal_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                            message=obtenerErrorSerializer(sucursal_serializer))
+                                             message=obtenerErrorSerializer(sucursal_serializer))
                 else:
                     mensaje = 'Los parámetros y el ID enviado deben coincidir.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)

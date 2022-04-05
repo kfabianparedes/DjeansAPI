@@ -21,7 +21,7 @@ class CategoriaCrearSerializer(Serializer):
 
     def validate_cat_descripcion(self, value):
 
-        if len(str.strip(value)) > 4:
+        if len(str.strip(value)) >= 4:
             if len(value) <= 30:
                 if validarCaracteresAlfabeticoConEspacios(value):
                     nombre_categoria = Categoria.objects.filter(cat_descripcion=value)

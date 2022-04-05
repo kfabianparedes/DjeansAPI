@@ -9,7 +9,8 @@ from core.settings.base import BD_ERROR_MESSAGE, SUCCESS_MESSAGE
 from apps.categorias import models
 from apps.categorias.models import Categoria
 from apps.categorias.serializers.actualizar_categoria_serializer import CategoriaActualizarSerializer
-from apps.categorias.serializers.actualizar_parcialmente_categoria_serializer import CategoriaActualizarParcialSerializer
+from apps.categorias.serializers.actualizar_parcialmente_categoria_serializer import \
+    CategoriaActualizarParcialSerializer
 from apps.categorias.serializers.categoria_serializer import CategoriaSerializer
 from apps.categorias.serializers.registrar_categoria_serializer import CategoriaCrearSerializer
 
@@ -50,11 +51,11 @@ class CategoriaView(GenericViewSet):
     def list(self, request):
         try:
             if request.user.is_superuser:
-                queryset = models.Categoria.objects.all().order_by('-cat_estado')
+                queryset = models.Categoria.objects.all().order_by('-cat_estado', 'cat_descripcion')
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
             else:
-                queryset = models.Categoria.objects.filter(cat_estado=True).order_by('-cat_estado')
+                queryset = models.Categoria.objects.filter(cat_estado=True).order_by('cat_descripcion')
                 categorias_serializer = CategoriaSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categorias_serializer.data, True)
         except DatabaseError:
@@ -68,7 +69,7 @@ class CategoriaView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_categoria_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                    message=obtenerErrorSerializer(crear_categoria_serializer))
+                                     message=obtenerErrorSerializer(crear_categoria_serializer))
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -84,7 +85,7 @@ class CategoriaView(GenericViewSet):
                         return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, categoria_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                            message=obtenerErrorSerializer(categoria_serializer))
+                                             message=obtenerErrorSerializer(categoria_serializer))
                 else:
                     mensaje = 'Los parámetros y el ID enviado deben coincidir.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -107,7 +108,7 @@ class CategoriaView(GenericViewSet):
                     return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, categoria_serializer.data, True)
                 else:
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                        message=obtenerErrorSerializer(categoria_serializer))
+                                         message=obtenerErrorSerializer(categoria_serializer))
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -122,11 +123,14 @@ class CategoriaView(GenericViewSet):
             if validarEsNumerico(cat_id_buscado) and validarEsMayorQueCero(cat_id_buscado):
                 categoria_obtenida = Categoria.objects.get(cat_id=cat_id_buscado)
                 categoria_actualizada = CategoriaSerializer(categoria_obtenida)
-                categoria_obtenida = Categoria.objects.filter(cat_id=cat_id_buscado).update(cat_estado=not categoria_actualizada.data.get('cat_estado'))
-                if categoria_obtenida == 1:
+                print(categoria_actualizada.data)
+                print(categoria_actualizada.data.get('cat_estado'))
+                filas_modificadas = Categoria.objects.filter(cat_id=cat_id_buscado).update(
+                    cat_estado=not categoria_actualizada.data.get('cat_estado'))
+                if filas_modificadas == 1:
                     return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
                 else:
-                    mensaje = 'La categoría no existe.'
+                    mensaje = 'La categoría no existe o no se ha podido desactivar/activar la categoría.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'

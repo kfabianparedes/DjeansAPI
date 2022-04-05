@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from apps.categorias.models import Categoria
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
 
 
 class CategoriaActualizarSerializer(Serializer):
@@ -27,7 +28,7 @@ class CategoriaActualizarSerializer(Serializer):
     def validate_cat_descripcion(self, value):
         if len(str.strip(value)) > 4:
             if len(str.strip(value)) <= 30:
-                if str(value).isalpha():
+                if validarCaracteresAlfabeticoConEspacios(value):
                     nombre_categoria = Categoria.objects.filter(cat_descripcion=value).exclude(
                         cat_id=self.instance.cat_id)
                     if not nombre_categoria.exists():
