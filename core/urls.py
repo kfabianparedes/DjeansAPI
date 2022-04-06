@@ -24,6 +24,7 @@ urlpatterns = [
     path('logout', Logout.as_view(), name='logout'),
     path('usuarios/', include('apps.usuarios.urls')),
     path('categorias/', include('apps.categorias.urls')),
+    path('proveedores/', include('apps.proveedores.urls')),
     path('sucursales/', include('apps.sucursales.urls')),
     path('tiendas/', include('apps.tiendas.urls')),
     path('colores/', include('apps.colores.urls')),
