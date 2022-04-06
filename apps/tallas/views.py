@@ -128,8 +128,8 @@ class TallaView(GenericViewSet):
     def destroy(self, request, pk=None):
         try:
             tal_id_buscado = self.kwargs['pk']
-            if validarEsNumerico(tal_id_obtenido) and validarEsMayorQueCero(tal_id_buscado):
-                talla_obtenida = Talla.Objects.get(tal_id = tal_id_buscado)
+            if validarEsNumerico(tal_id_buscado) and validarEsMayorQueCero(tal_id_buscado):
+                talla_obtenida = Talla.objects.get(tal_id = tal_id_buscado)
                 talla_actuaizada = TallaSerializer(talla_obtenida)
                 talla_obtenida = Talla.objects.filter(tal_id = tal_id_buscado).update(
                     tal_estado = not talla_actuaizada.data.get('tal_estado'))

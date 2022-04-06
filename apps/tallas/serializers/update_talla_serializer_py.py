@@ -37,24 +37,22 @@ class UpdateTallaSerializer(Serializer):
                     if not nombre_talla.exists():
                         return value
                     else:
-                        raise serializers.ValidationError("El color ya existe.")
+                        raise serializers.ValidationError("La talla ya existe.")
 
                 else:
                     raise serializers.ValidationError("El nombre de la talla solo debe contener caracteres alfabéticos.")
             else:
                 raise serializers.ValidationError("El nombre de la talla no debe tener más de 30 caracteres.")
         else:
-            raise serializers.ValidationError("El nombre de la talla no debe tener menos de 3 caracteres.")
+            raise serializers.ValidationError("El nombre de la talla no debe tener menos de 1 caracteres.")
 
     def validate_tal_estado(self, value):
         if type(value) == bool:
-
             return value
-
         else:
             raise serializers.ValidationError("El estado de la talla solo puede ser Verdadero o Falso.")
 
     def update(self, instance, data):
         instance.tal_descripcion = str(data.get('tal_descripcion',instance.tal_descripcion)).upper()
-        instance.cat_estado = data.get('tal_estado',instance.tal_estado)
+        instance.tal_estado = data.get('tal_estado',instance.tal_estado)
         return instance.save()

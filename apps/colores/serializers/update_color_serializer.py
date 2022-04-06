@@ -25,7 +25,7 @@ class UpdateColorSerializer(Serializer):
                                           })
     def validate_col_descripcion(self, value):
 
-        if len(str.strip(value)) > 3: # validamos que el valor ingresado no sea menor a 3 pero antes le quitamos los espacios
+        if len(str.strip(value)) >= 3: # validamos que el valor ingresado no sea menor a 3 pero antes le quitamos los espacios
             if len(value) <= 30: # validamos que el valor ingresado no sea mayor a 30 sin quitarle los espacios
                 if str(value).isalpha(): # valiamos que el valor ingresado sea solo alfabético
 
