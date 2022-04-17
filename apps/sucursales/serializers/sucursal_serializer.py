@@ -1,8 +1,8 @@
-
 from rest_framework.serializers import ModelSerializer
-from apps.sucursales.models import SUCURSALES
+from apps.sucursales.models import Sucursal
+
 
 class SucursalSerializer(ModelSerializer):
     class Meta:
-        model=SUCURSALES
-        fields='__all__'
+        model = Sucursal
+        fields = '__all__'

@@ -30,7 +30,7 @@ class UsuarioView(GenericViewSet):
         try:
             user_serializer = UsuarioRegistrarSerializer(data=request.data)
             if user_serializer.is_valid():  # raise_exception=True es para retornar directamente la lista de errores en json
-                user_serializer.create(request.data)
+                user_serializer.save()
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(user_serializer))
@@ -69,8 +69,8 @@ class UsuarioView(GenericViewSet):
                 if request.data.get('id') == int(usu_id):
                     usuario_serializer = UsuarioActualizarSerializer(usuario_obtenido, data=request.data)
                     if usuario_serializer.is_valid():
-                        usuario_serializer.update(usuario_obtenido, request.data)
-                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, usuario_serializer.data, True)
+                        usuario_serializer.save()
+                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,message=obtenerErrorSerializer(usuario_serializer))
                 else:

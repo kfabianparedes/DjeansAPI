@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from apps.usuarios.models import Usuario
-from core.assets.validations.obtener_error_serializer import validarEsNumerico
+from core.assets.validations.obtener_error_serializer import validarEsNumerico, validarCaracteresAlfabeticoConEspacios
 
 
 class UsuarioRegistrarSerializer(Serializer):
@@ -23,13 +23,13 @@ class UsuarioRegistrarSerializer(Serializer):
                                    error_messages={
                                        'required': 'El rol es requerido',
                                        'null': 'El rol no debe ser estar vacío.',
-                                       'invalid': 'El rol debe ser válido.',
+                                       'invalid': 'El rol debe ser un número entero.',
                                    })
 
     def validate_username(self, value):
         if len(str.strip(value)) >= 5:
             if len(str.strip(value)) <= 50:
-                if str(value).isalpha():
+                if validarCaracteresAlfabeticoConEspacios(value):
                     username = Usuario.objects.filter(username=value)
                     if not username.exists():
                         return value
@@ -52,15 +52,16 @@ class UsuarioRegistrarSerializer(Serializer):
             raise serializers.ValidationError("La contraseña debe tener mínimo 8 caracteres.")
 
     def validate_rol(self, value):
-        if validarEsNumerico(str(value)) and (0 < value < 4):
-            return value
-        raise serializers.ValidationError("El rol debe ser un número entero entre 1 y 3.")
+        if validarEsNumerico(value):
+            if 0 < value < 4:
+                return value
+            raise serializers.ValidationError("El rol debe ser un número entero entre 1 y 3.")
+        raise serializers.ValidationError("El rol debe ser un número entero.")
 
-    def create(self, data):
-        username = data['username']
-        password = data['password']
-        rol = data['rol']
-
+    def save(self, **kwargs):
+        username = self.data.get('username')
+        password = self.data.get('password')
+        rol = self.data.get('rol')
         if rol == 1:
             return Usuario.objects.create_superuser(
                 username=username,
@@ -73,3 +74,6 @@ class UsuarioRegistrarSerializer(Serializer):
             return Usuario.objects.create_employee(
                 username=username,
                 password=password)
+        else:
+            raise serializers.ValidationError("El rol debe ser un número entero.")
+

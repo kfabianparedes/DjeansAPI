@@ -6,7 +6,7 @@ def obtenerErrorSerializer(value):
 
 
 def validarEsNumerico(value):
-    if value.isnumeric():
+    if str(value).isnumeric():
         return True
     return False
 

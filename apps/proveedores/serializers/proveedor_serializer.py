@@ -1,7 +1,8 @@
 from rest_framework.serializers import ModelSerializer
-from apps.proveedores.models import PROVEEDORES
+from apps.proveedores.models import Proveedor
+
 
 class ProveedorSerializer(ModelSerializer):
     class Meta:
-        model=PROVEEDORES
-        fields='__all__'
+        model = Proveedor
+        fields = '__all__'

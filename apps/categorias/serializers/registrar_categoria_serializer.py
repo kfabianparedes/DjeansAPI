@@ -38,10 +38,10 @@ class CategoriaCrearSerializer(Serializer):
             raise serializers.ValidationError("El nombre de la categoría no debe tener menos de 4 caracteres.")
 
     def validate_cat_estado(self, value):
-        if type(value) == bool:
+        if bool(value):
             return value
         else:
-            raise serializers.ValidationError("El estado de la categoría solo puede ser Verdadero o Falso")
+            raise serializers.ValidationError("El estado de la categoría solo puede ser Verdadero")
 
     def create(self, data):
         descripcion = str(data['cat_descripcion']).upper()

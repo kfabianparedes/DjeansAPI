@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Color(models.Model):
     col_id = models.BigAutoField(primary_key=True, unique=True)

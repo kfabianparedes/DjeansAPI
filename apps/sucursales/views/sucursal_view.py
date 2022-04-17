@@ -7,9 +7,8 @@ from core.assets.reutilizable.funciones_reutilizables import respuestaJson
 from core.assets.validations.obtener_error_serializer import *
 from core.settings.base import BD_ERROR_MESSAGE, SUCCESS_MESSAGE
 from apps.sucursales import models
-from apps.sucursales.models import SUCURSALES
+from apps.sucursales.models import Sucursal
 from apps.sucursales.serializers.actualizar_sucursal_serializer import SucursalActualizarSerializer
-# from apps.categorias.serializers.actualizar_parcialmente_categoria_serializer import CategoriaActualizarParcialSerializer
 from apps.sucursales.serializers.sucursal_serializer import SucursalSerializer
 from apps.sucursales.serializers.registrar_sucursal_serializer import SucursalCrearSerializer
 
@@ -20,14 +19,10 @@ class SucursalView(GenericViewSet):
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [EstaAutenticadoPermission]
-        # elif self.action == 'retrieve':
-        #     permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         elif self.action == 'create':
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         elif self.action == 'update':
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
-        # elif self.action == 'partial_update':
-        #     permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         else:
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         return [permission() for permission in permission_classes]
@@ -35,11 +30,11 @@ class SucursalView(GenericViewSet):
     def list(self, request):
         try:
             if request.user.is_superuser:
-                queryset = models.SUCURSALES.objects.all()
+                queryset = models.Sucursal.objects.all()
                 sucursales_serializer = SucursalSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, sucursales_serializer.data, True)
             else:
-                queryset = models.Categoria.objects.filter(SUC_ESTADO=True)
+                queryset = models.Categoria.objects.filter(suc_estado=True)
                 sucursales_serializer = SucursalSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, sucursales_serializer.data, True)
         except DatabaseError:
@@ -61,8 +56,8 @@ class SucursalView(GenericViewSet):
         try:
             suc_id_buscado = self.kwargs['pk']
             if validarEsNumerico(suc_id_buscado) and validarEsMayorQueCero(suc_id_buscado):
-                sucursal_obtenida = SUCURSALES.objects.get(SUC_ID=suc_id_buscado)
-                if request.data.get('SUC_ID') == int(suc_id_buscado):
+                sucursal_obtenida = Sucursal.objects.get(suc_id=suc_id_buscado)
+                if request.data.get('suc_id') == int(suc_id_buscado):
                     sucursal_serializer = SucursalActualizarSerializer(sucursal_obtenida, data=request.data)
                     if sucursal_serializer.is_valid():
                         sucursal_serializer.update(sucursal_obtenida, request.data)
@@ -76,7 +71,7 @@ class SucursalView(GenericViewSet):
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
-        except SUCURSALES.DoesNotExist:
-            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La Sucursal no existe.")
+        except Sucursal.DoesNotExist:
+            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La sucursal no existe.")
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)

@@ -1,6 +1,6 @@
 from django.db import models
 
-# Create your models here.
+
 class Talla(models.Model):
     tal_id = models.BigAutoField(primary_key=True, unique=True)
     tal_descripcion = models.CharField(max_length=30)
