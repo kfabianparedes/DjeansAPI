@@ -47,11 +47,11 @@ class ColorView(GenericViewSet):
     def list(self, request):  # Falta probar
         try:
             if request.user.is_superuser:
-                queryset = models.Color.objects.all().order_by('-col_estado')
+                queryset = models.Color.objects.all().order_by('-col_estado', 'col_descripcion')
                 color_serializer = ColorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, color_serializer.data, True)
             else:
-                queryset = models.Color.objects.filter(cat_estado=True).order_by('-col_estado')
+                queryset = models.Color.objects.filter(cat_estado=True).order_by('-col_descripcion')
                 color_serializer = ColorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, color_serializer.data, True)
 
@@ -137,14 +137,13 @@ class ColorView(GenericViewSet):
             if validarEsNumerico(col_id_obtenido) and validarEsMayorQueCero(col_id_obtenido):
                 color_obtenido = Color.objects.get(col_id=col_id_obtenido)
                 color_actuaizado = ColorSerializer(color_obtenido)
-                color_obtenido = Color.objects.filter(col_id=col_id_obtenido).update(
+                filas_modificadas = Color.objects.filter(col_id=col_id_obtenido).update(
                     col_estado=not color_actuaizado.data.get('col_estado')
                 )
-                print("hola")
-                if color_obtenido == 1:
+                if filas_modificadas == 1:
                     return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, success=True)
                 else:
-                    mensaje = 'El color no existe.'
+                    mensaje = 'El color no existe o no se ha podido desactivar/activar.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'

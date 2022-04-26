@@ -38,15 +38,15 @@ class TallaView(GenericViewSet):
         try:
             if request.user.is_superuser:
 
-                queryset = models.Talla.objects.all().order_by('-tal_estado')
+                queryset = models.Talla.objects.all().order_by('-tal_estado','tal_descripcion')
                 talla_serializer = TallaSerializer(queryset, many=True)
-                return respuestaJson(status.HTTP_400_BAD_REQUEST,SUCCESS_MESSAGE,talla_serializer.data,True)
+                return respuestaJson(status.HTTP_200_OK,SUCCESS_MESSAGE,talla_serializer.data,True)
 
             else:
 
                 queryset = models.Talla.objects.filter(tal_estado=True).order_by('-tal_estado')
                 talla_serializer = TallaSerializer(queryset, many=True)
-                return respuestaJson(status.HTTP_400_BAD_REQUEST,SUCCESS_MESSAGE,talla_serializer.data,True)
+                return respuestaJson(status.HTTP_200_OK,SUCCESS_MESSAGE,talla_serializer.data,True)
 
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR,message=BD_ERROR_MESSAGE)
@@ -131,12 +131,12 @@ class TallaView(GenericViewSet):
             if validarEsNumerico(tal_id_buscado) and validarEsMayorQueCero(tal_id_buscado):
                 talla_obtenida = Talla.objects.get(tal_id = tal_id_buscado)
                 talla_actuaizada = TallaSerializer(talla_obtenida)
-                talla_obtenida = Talla.objects.filter(tal_id = tal_id_buscado).update(
+                filas_modificadas = Talla.objects.filter(tal_id = tal_id_buscado).update(
                     tal_estado = not talla_actuaizada.data.get('tal_estado'))
-                if talla_obtenida == 1:
+                if filas_modificadas == 1:
                     return respuestaJson(status.HTTP_200_OK,SUCCESS_MESSAGE,success=True)
                 else:
-                    mensaje = 'La categoría no existe.'
+                    mensaje = 'La categoría no existe o no se ha podido desactivar/activar.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,message=mensaje)
             else:
                 mensaje = 'Los parámetros deber ser numéricos y mayores a 0.'
