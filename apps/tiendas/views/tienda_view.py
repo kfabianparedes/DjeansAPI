@@ -49,7 +49,7 @@ class TiendaView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_tiendas_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                     message=obtenerErrorSerializer(crear_tiendas_serializer))
+                                    message=obtenerErrorSerializer(crear_tiendas_serializer))
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
@@ -59,13 +59,13 @@ class TiendaView(GenericViewSet):
             if validarEsNumerico(tie_id_buscado) and validarEsMayorQueCero(tie_id_buscado):
                 tienda_obtenida = Tienda.objects.get(tie_id=tie_id_buscado)
                 if request.data.get('tie_id') == int(tie_id_buscado):
-                    sucursal_serializer = TiendaActualizarSerializer(tienda_obtenida, data=request.data)
-                    if sucursal_serializer.is_valid():
-                        sucursal_serializer.update(tienda_obtenida, request.data)
-                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, sucursal_serializer.data, True)
+                    tienda_serializer = TiendaActualizarSerializer(tienda_obtenida, data=request.data)
+                    if tienda_serializer.is_valid():
+                        tienda_serializer.update(tienda_obtenida, request.data)
+                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, tienda_serializer.data, True)
                     else:
                         return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
-                                             message=obtenerErrorSerializer(sucursal_serializer))
+                                            message=obtenerErrorSerializer(tienda_serializer))
                 else:
                     mensaje = 'Los parámetros y el ID enviado deben coincidir.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)

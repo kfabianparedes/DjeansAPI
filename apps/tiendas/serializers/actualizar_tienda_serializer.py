@@ -1,33 +1,37 @@
+
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from apps.sucursales.models import Sucursal
+from apps.sucursales.serializers.sucursal_serializer import SucursalSerializer
 
 from apps.tiendas.models import Tienda
+from apps.tiendas.serializers.tienda_serializer import TiendaSerializer
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
 
 
 class TiendaActualizarSerializer(Serializer):
     tie_id = serializers.IntegerField(required=True,
-                                      error_messages={
-                                          "required": "El ID de la Tienda es requerido.",
-                                          "blank": "El ID de la Tienda no debe estar vacío.",
-                                          "invalid": "El ID de la Tienda debe ser válido.",
-                                      })
+                                    error_messages={
+                                        "required": "El ID de la Tienda es requerido.",
+                                        "blank": "El ID de la Tienda no debe estar vacío.",
+                                        "invalid": "El ID de la Tienda debe ser válido.",
+                                    })
     tie_nombre = serializers.CharField(required=True,
-                                       error_messages={"required": "El nombre de la Tienda es requerido.",
-                                                       "blank": "El nombre de la Tienda no debe estar vacio",
-                                                       "invalid": "El nombre de la Tienda debe ser valido.",
-                                                       })
+                                    error_messages={"required": "El nombre de la Tienda es requerido.",
+                                                    "blank": "El nombre de la Tienda no debe estar vacio",
+                                                    "invalid": "El nombre de la Tienda debe ser valido.",
+                                                    })
     tie_estado = serializers.BooleanField(required=True,
-                                          error_messages={"required": "El estado de la Tienda es requerido.",
-                                                          "blank": "El estado de la Tienda no debe estar vacio",
-                                                          "invalid": "El estado de la Tienda debe ser valido.",
-                                                          })
-    tie_suc_id = serializers.IntegerField(required=True,
-                                          error_messages={"required": "El id de la Sucursal es requerido.",
-                                                          "blank": "El id de la Sucursal no debe estar vacio",
-                                                          "invalid": "El id de la Sucursal debe ser valido.",
-                                                          })
+                                        error_messages={"required": "El estado de la Tienda es requerido.",
+                                                        "blank": "El estado de la Tienda no debe estar vacio",
+                                                        "invalid": "El estado de la Tienda debe ser valido.",
+                                                        })
+    # tie_suc_id = serializers.IntegerField(required=True,
+    #                                         error_messages={"required": "El id de la Sucursal es requerido.",
+    #                                                     "blank": "El id de la Sucursal no debe estar vacio",
+    #                                                     "invalid": "El id de la Sucursal debe ser valido.",
+    #                                                     })
+    tie_suc_id=serializers.ReadOnlyField(source='sucursal.suc_id')
 
     def validate_tie_nombre(self, value):
         if len(str.strip(value)) > 4:
@@ -56,9 +60,21 @@ class TiendaActualizarSerializer(Serializer):
 
         print("DATA:  ", data)
         # instanciamiento = Sucursal()
-        # instanciamiento.suc_id = data.get('tie_suc_id', instance.tie_suc_id)
-        #
-        #
-        # instance.tie_estado = data.get('tie_estado', instance.tie_estado)
+        # instanciamiento.suc_id = data.get('tie_suc_id',instance.tie_suc_id)
+        # instance.tie_suc_id=int(instanciamiento)
+
+
+        # METODO 1
+        # GRABA LA EDICION PERO MUESTRA MENSAJE DE ERROR
+        instanciamientoSucursal=Sucursal()
+        instanciamientoSucursal.tie_suc_id=int(data.get('tie_suc_id',instance.tie_suc_id))
+        
+        #METODO 2
+
+        # instanciamientoSucursal.suc_id=data.get('tie_suc_id')
+        # instance.tie_suc_id=data.get('tie_suc_id',datoSucursal.suc_id)
+
+        instance.tie_nombre=str(data.get('tie_nombre', instance.tie_nombre))
+        instance.tie_estado = data.get('tie_estado', instance.tie_estado)
 
         return instance.save()

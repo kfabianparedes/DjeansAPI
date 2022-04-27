@@ -32,7 +32,7 @@ class SucursalActualizarSerializer(Serializer):
         if len(str.strip(value)) > 4:
             if len(value) <= 30:
                 if validarCaracteresAlfabeticoConEspacios(value):
-                    nombre_sucursal = sucursal.objects.filter(suc_nombre=value)
+                    nombre_sucursal = Sucursal.objects.filter(suc_nombre=value)
                     if not nombre_sucursal.exists():
                         return value
                     else:
@@ -49,7 +49,7 @@ class SucursalActualizarSerializer(Serializer):
         if len(str.strip(value)) > 4:
             if len(value) <= 30:
                 if validarCaracteresAlfabeticoConEspacios(value):
-                    direccion_sucursal = sucursal.objects.filter(suc_direccion=value)
+                    direccion_sucursal = Sucursal.objects.filter(suc_direccion=value)
                 else:
                     raise serializers.ValidationError(
                         'La dirección de la sucursal debe contener caracteres alfabéticos.')

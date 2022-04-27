@@ -1,4 +1,5 @@
 from operator import truediv
+from re import T
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from apps.sucursales.models import Sucursal
@@ -9,20 +10,20 @@ from core.assets.validations.obtener_error_serializer import validarCaracteresAl
 
 class TiendaCrearSerializer(Serializer):
     tie_nombre = serializers.CharField(required=True,
-                                       error_messages={"required": "El nombre de la Tienda es requerido.",
-                                                       "blank": "El nombre de la Tienda no debe estar vacio",
-                                                       "invalid": "El nombre de la Tienda debe ser valido.",
-                                                       })
+                                        error_messages={"required": "El nombre de la Tienda es requerido.",
+                                                    "blank": "El nombre de la Tienda no debe estar vacio",
+                                                    "invalid": "El nombre de la Tienda debe ser valido.",
+                                                    })
     tie_estado = serializers.BooleanField(required=True,
-                                          error_messages={"required": "El estado de la Tienda es requerido.",
-                                                          "blank": "El estado de la Tienda no debe estar vacio",
-                                                          "invalid": "El estado de la Tienda debe ser valido.",
-                                                          })
+                                            error_messages={"required": "El estado de la Tienda es requerido.",
+                                                        "blank": "El estado de la Tienda no debe estar vacio",
+                                                        "invalid": "El estado de la Tienda debe ser valido.",
+                                                        })
     tie_suc_id = serializers.IntegerField(required=True,
-                                          error_messages={"required": "El id de la Sucursal es requerido.",
-                                                          "blank": "El id de la Sucursal no debe estar vacio",
-                                                          "invalid": "El id de la Sucursal debe ser valido.",
-                                                          })
+                                            error_messages={"required": "El id de la Sucursal es requerido.",
+                                                        "blank": "El id de la Sucursal no debe estar vacio",
+                                                        "invalid": "El id de la Sucursal debe ser valido.",
+                                                        })
 
     def validate_tie_nombre(self, value):
         if len(str.strip(value)) > 4:
@@ -44,7 +45,7 @@ class TiendaCrearSerializer(Serializer):
     def validate_tie_suc_id(self, value):
         if value > 0:
             print("ATTRS ", value)
-            verifica_id = Sucursal.objects.filter(SUC_ID=value).exists()
+            verifica_id = Sucursal.objects.filter(suc_id=value).exists()
             print("ExisteSucursal ", verifica_id)
             if not verifica_id:
                 raise serializers.ValidationError("No existe tal Sucursal")
@@ -65,4 +66,8 @@ class TiendaCrearSerializer(Serializer):
 
         tienda_nueva = Tienda(tie_nombre=nombre, tie_estado=True, tie_suc_id=instanciamiento)
         print("TIENDA NUEVA: ", tienda_nueva)
+
+        # nombre = str(data['tie_nombre']).upper()
+        # nombreSucursal=Sucursal.suc_id
+        # tienda_nueva=Tienda(tie_nombre=nombre,tie_estado=True,tie_suc_id=nombreSucursal)
         tienda_nueva.save()
