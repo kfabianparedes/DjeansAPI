@@ -22,3 +22,13 @@ def validarCaracteresAlfabeticoConEspacios(value):
     if re.match(r"[a-zA-Z ]+$", str(value)):
         return True
     return False
+
+def validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
+    if re.match(r"[a-zñáéíóú\- A-ZÑÁÉÍÓÚ 0-9]+$", str(value)):
+        return True
+    return False
+
+def validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
+    if re.match(r"[a-zñáéíóú\-.# A-ZÑÁÉÍÓÚ 0-9]+$", str(value)):
+        return True
+    return False

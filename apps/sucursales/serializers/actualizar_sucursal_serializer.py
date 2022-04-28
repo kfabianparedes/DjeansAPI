@@ -3,6 +3,9 @@ from rest_framework.serializers import Serializer
 
 from apps.sucursales.models import Sucursal
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspaciosNumerosGuiones
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos
+
 
 
 class SucursalActualizarSerializer(Serializer):
@@ -31,14 +34,14 @@ class SucursalActualizarSerializer(Serializer):
     def validate_suc_nombre(self, value):
         if len(str.strip(value)) > 4:
             if len(value) <= 30:
-                if validarCaracteresAlfabeticoConEspacios(value):
+                if validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
                     nombre_sucursal = Sucursal.objects.filter(suc_nombre=value)
                     if not nombre_sucursal.exists():
                         return value
                     else:
                         raise serializers.ValidationError('La sucursal ya existe.')
                 else:
-                    raise serializers.ValidationError('La sucursal debe contener caracteres alfabéticos.')
+                    raise serializers.ValidationError('El nombre de la sucursal es inválido.')
 
             else:
                 raise serializers.ValidationError("El nombre de la sucursal no debe tener más de 30 caracteres.")
@@ -48,11 +51,11 @@ class SucursalActualizarSerializer(Serializer):
     def validate_suc_direccion(self, value):
         if len(str.strip(value)) > 4:
             if len(value) <= 30:
-                if validarCaracteresAlfabeticoConEspacios(value):
+                if validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
                     direccion_sucursal = Sucursal.objects.filter(suc_direccion=value)
                 else:
                     raise serializers.ValidationError(
-                        'La dirección de la sucursal debe contener caracteres alfabéticos.')
+                        'La dirección de la sucursal ingresada es inválida.')
 
             else:
                 raise serializers.ValidationError("La dirección de la sucursal no debe tener más de 30 caracteres.")
