@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from apps.colores.models import Color
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
 
 
 class UpdateColorSerializer(Serializer):
@@ -28,7 +29,7 @@ class UpdateColorSerializer(Serializer):
         if len(str.strip(
                 value)) >= 3:  # validamos que el valor ingresado no sea menor a 3 pero antes le quitamos los espacios
             if len(value) <= 30:  # validamos que el valor ingresado no sea mayor a 30 sin quitarle los espacios
-                if str(value).isalpha():  # valiamos que el valor ingresado sea solo alfabético
+                if validarCaracteresAlfabeticoConEspacios(value):  # valiamos que el valor ingresado sea solo alfabético
 
                     nombre_color = Color.objects.filter(col_descripcion=value).exclude(
                         col_id=self.instance.col_id)
