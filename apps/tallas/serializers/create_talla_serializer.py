@@ -6,6 +6,7 @@ from apps.tallas.models import Talla
 
 #importando validaciones
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfaNumericos
 
 class CreateTallaSerializer(Serializer):
     tal_descripcion = serializers.CharField(required=True,
@@ -24,8 +25,8 @@ class CreateTallaSerializer(Serializer):
     def validate_tal_descripcion(self, value):
 
         if len(str.strip(value)) >= 1:  # validamos que el valor ingresado no sea menor a 3 pero antes le quitamos los espacios
-            if len(value) <= 30:  # validamos que el valor ingresado no sea mayor a 30 sin quitarle los espacios
-                if validarCaracteresAlfabeticoConEspacios(value):  # valiamos que el valor ingresado sea solo alfabético
+            if len(value) <= 3:  # validamos que el valor ingresado no sea mayor a 30 sin quitarle los espacios
+                if validarCaracteresAlfaNumericos(value):  # valiamos que el valor ingresado sea solo alfabético
 
                     nombre_talla = Talla.objects.filter(tal_descripcion=value)
 
@@ -35,9 +36,9 @@ class CreateTallaSerializer(Serializer):
                         raise serializers.ValidationError("La talla ya existe.")
 
                 else:
-                    raise serializers.ValidationError("El nombre de la talla solo debe contener caracteres alfabéticos.")
+                    raise serializers.ValidationError("El nombre de la talla solo debe contener caracteres alfanuméricos.")
             else:
-                raise serializers.ValidationError("El nombre de la talla no debe tener más de 30 caracteres.")
+                raise serializers.ValidationError("El nombre de la talla no debe tener más de 3 caracteres.")
         else:
             raise serializers.ValidationError("El nombre de la talla no debe tener menos de 1 caracteres.")
 
