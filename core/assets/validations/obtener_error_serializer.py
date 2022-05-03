@@ -23,6 +23,16 @@ def validarCaracteresAlfabeticoConEspacios(value):
         return True
     return False
 
+def validarCaracteresAlfabeticoConEspaciosPuntos(value):
+    if re.match(r"^[a-zñáéíóúA-ZÑÁÉÍÓÚ. ]+$", str(value)):
+        return True
+    return False
+
+def validarEmail(value):
+    if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$", str(value)):
+        return True
+    return False
+
 def validarCaracteresAlfaNumericos(value):
     if re.match(r"^[a-zñáéíóúA-ZÑÁÉÍÓÚ 0-9]+$", str(value)):
         return True

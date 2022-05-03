@@ -31,11 +31,11 @@ class ProveedorView(GenericViewSet):
     def list(self, request):
         try:
             if request.user.is_superuser:
-                queryset = models.Proveedor.objects.all()
+                queryset = models.Proveedor.objects.all().order_by('pro_estado','pro_nombre')
                 proveedores_serializers = ProveedorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, proveedores_serializers.data, True)
             else:
-                queryset = models.TIENDAS.objects.filter(pro_estado=True)
+                queryset = models.Proveedor.objects.filter(pro_estado=True).order_by('pro_estado','pro_nombre')
                 proveedores_serializers = ProveedorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, proveedores_serializers.data, True)
         except DatabaseError:
@@ -72,6 +72,29 @@ class ProveedorView(GenericViewSet):
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+        except Proveedor.DoesNotExist:
+            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="El proveedor no existe.")
+        except DatabaseError:
+            return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
+
+    def destroy(self,request, pk=None):
+        try:
+            pro_id_obtenido = self.kwargs['pk']
+            if validarEsNumerico(pro_id_obtenido) and validarEsMayorQueCero(pro_id_obtenido):
+                proveedor_obtenido = Proveedor.objects.get(pro_id=pro_id_obtenido)
+                proveedor_actuaizado = ProveedorSerializer(proveedor_obtenido)
+                filas_modificadas = Proveedor.objects.filter(pro_id=pro_id_obtenido).update(
+                    pro_estado=not proveedor_actuaizado.data.get('pro_estado')
+                )
+                if filas_modificadas == 1:
+                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, success=True)
+                else:
+                    mensaje = 'El proveedor no existe o no se ha podido desactivar/activar.'
+                    return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+            else:
+                mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
+                return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+
         except Proveedor.DoesNotExist:
             return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="El proveedor no existe.")
         except DatabaseError:
