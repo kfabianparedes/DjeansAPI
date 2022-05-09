@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
+from apps.roles.models import Rol
 from apps.usuarios.models import Usuario
-from core.assets.validations.obtener_error_serializer import validarEsNumerico
+from core.assets.validations.obtener_error_serializer import validarEsNumerico, validarCaracteresAlfabeticoConEspacios
 
 
 class UsuarioActualizarSerializer(Serializer):
@@ -11,7 +12,6 @@ class UsuarioActualizarSerializer(Serializer):
                                          'required': 'El nombre de usuario es requerido.',
                                          'blank': 'El nombre de usuario no debe estar vacío.',
                                          'invalid': 'El nombre de usuario debe ser válido.',
-
                                      })
 
     is_active = serializers.BooleanField(required=True,
@@ -31,7 +31,7 @@ class UsuarioActualizarSerializer(Serializer):
     def validate_username(self, value):
         if len(str.strip(value)) >= 5:
             if len(str.strip(value)) <= 50:
-                if str(value).isalpha():
+                if validarCaracteresAlfabeticoConEspacios(value):
                     username = Usuario.objects.filter(username=value).exclude(id=self.instance.id)
                     if not username.exists():
                         return value
@@ -45,8 +45,6 @@ class UsuarioActualizarSerializer(Serializer):
             raise serializers.ValidationError("El nombre de usuario debe tener mínimo 5 caracteres.")
 
     def validate_is_active(self, value):
-        print(type(value), ' estado')
-        print(value)
         if type(value) == bool:
             return value
         else:
@@ -54,29 +52,23 @@ class UsuarioActualizarSerializer(Serializer):
 
     def validate_rol(self, value):
         if validarEsNumerico(value):
-            if 0 < value < 4:
+            rol = Rol.objects.filter(rol_id=value)
+            if rol.exists():
                 return value
-            raise serializers.ValidationError("El rol debe ser un número entero entre 1 y 3.")
-        raise serializers.ValidationError("El rol debe ser un número entero.")
+            else:
+                raise serializers.ValidationError("El rol no está registrado.")
+        else:
+            raise serializers.ValidationError("El rol debe ser un número entero.")
 
-    def save(self, **kwargs):
-        print(self.data)
-        print(self.instance)
-        # self.instance.is_active = self.data.get('is_active', self.instance.is_active)
-        # self.instance.username = str.strip(self.data.get('username', self.instance.username))
-        # rol = self.data.get('rol', 0)
-        # if rol == 1:
-        #     self.instance.is_superuser = True
-        #     self.instance.is_employee = True
-        #     self.instance.is_staff = True
-        # elif rol == 2:
-        #     self.instance.is_superuser = False
-        #     self.instance.is_employee = False
-        #     self.instance.is_staff = True
-        # elif rol == 3:
-        #     self.instance.is_superuser = False
-        #     self.instance.is_employee = True
-        #     self.instance.is_staff = False
-        # else:
-        #     raise serializers.ValidationError("El rol debe ser un número entero.")
-        # return self.instance.save()
+    def update(self, instance, data):
+        instance.is_active = data.get('is_active', instance.is_active)
+        instance.username = str.strip(data.get('username', instance.username))
+        instance.rol = data.get('rol', instance.rol)
+        role = Rol.objects.filter(rol_id=instance.rol, rol_tipo='SUPERUSUARIO')
+        if role.exists():
+            print('Existe')
+            instance.is_superuser = True
+        else:
+            print('No existe')
+            instance.is_superuser = False
+        return instance.save()

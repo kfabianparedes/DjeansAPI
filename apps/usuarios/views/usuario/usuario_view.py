@@ -16,20 +16,20 @@ class UsuarioView(GenericViewSet):
     def get_permissions(self):
         if self.action == 'list':
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
-        elif self.action == 'retrieve':
-            permission_classes = [EstaAutenticadoPermission, UsuarioPropioPermission]
         elif self.action == 'create':
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         elif self.action == 'update':
-            permission_classes = [EstaAutenticadoPermission, UsuarioPropioPermission]
+            permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
+        elif self.action == 'destroy':
+            permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         else:
-            permission_classes = [EstaAutenticadoPermission, MetodoNoPermitidoPermission]
+            permission_classes = [MetodoNoPermitidoPermission]
         return [permission() for permission in permission_classes]
 
     def create(self, request):
         try:
             user_serializer = UsuarioRegistrarSerializer(data=request.data)
-            if user_serializer.is_valid():  # raise_exception=True es para retornar directamente la lista de errores en json
+            if user_serializer.is_valid():
                 user_serializer.save()
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, user_serializer.data, True)
             else:
@@ -45,34 +45,19 @@ class UsuarioView(GenericViewSet):
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
-    def retrieve(self, request, pk=None):
-        try:
-
-            usu_id = self.kwargs['pk']
-            if validarEsNumerico(usu_id) and validarEsMayorQueCero(usu_id):
-                usuario_obtenido = Usuario.objects.get(id=usu_id)
-                usuario_serializer = UsuarioSerializer(usuario_obtenido)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, usuario_serializer.data, True)
-            else:
-                mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
-                return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
-        except Usuario.DoesNotExist:
-            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="El usuario no está registrado.")
-        except DatabaseError:
-            return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
-        
     def update(self, request, pk=None):
         try:
+            print(request.data)
             usu_id = self.kwargs['pk']
             if validarEsNumerico(usu_id) and validarEsMayorQueCero(usu_id):
                 usuario_obtenido = Usuario.objects.get(id=usu_id)
                 if request.data.get('id') == int(usu_id):
                     usuario_serializer = UsuarioActualizarSerializer(usuario_obtenido, data=request.data)
                     if usuario_serializer.is_valid():
-                        usuario_serializer.save()
+                        usuario_serializer.update(instance=usuario_obtenido, data=request.data)
                         return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
                     else:
-                        return respuestaJson(code=status.HTTP_400_BAD_REQUEST,message=obtenerErrorSerializer(usuario_serializer))
+                        return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(usuario_serializer))
                 else:
                     mensaje = 'Los parámetros y el ID enviado deben coincidir.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
@@ -84,22 +69,26 @@ class UsuarioView(GenericViewSet):
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
         
-        
     def destroy(self, request, pk=None):
         try:
             usu_id_buscado = self.kwargs['pk']
             if validarEsNumerico(usu_id_buscado) and validarEsMayorQueCero(usu_id_buscado):
-                usuario_obtenido = Categoria.objects.filter(id=usu_id_buscado).update(cat_estado=False)
-                print(usuario_obtenido)
-                if usuario_obtenido == 1:
-                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, message=True)
+                usuario_obtenido = Usuario.objects.get(id=usu_id_buscado)
+                usuario_actualizado = UsuarioSerializer(usuario_obtenido)
+                filas_modificadas = Usuario.objects.filter(id=usu_id_buscado).update(
+                    is_active=not usuario_actualizado.data.get('is_active'))
+                if filas_modificadas == 1:
+                    return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
                 else:
-                    mensaje = 'La categoría no existe.'
+                    mensaje = 'El Usuario no existe o no se ha podido desactivar/activar.'
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
             else:
                 mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
-        except Categoria.DoesNotExist:
-            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La categoría no existe.")
+        except Usuario.DoesNotExist:
+            return respuestaJson(status.HTTP_400_BAD_REQUEST, "El usuario no éxiste.")
         except DatabaseError:
-            return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
+            return respuestaJson(status.HTTP_500_INTERNAL_SERVER_ERROR, BD_ERROR_MESSAGE)
+
+        
+
