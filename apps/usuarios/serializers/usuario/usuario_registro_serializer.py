@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
+from apps.roles.models import Rol
 from apps.usuarios.models import Usuario
 from core.assets.validations.obtener_error_serializer import validarEsNumerico, validarCaracteresAlfabeticoConEspacios
 
@@ -53,27 +54,29 @@ class UsuarioRegistrarSerializer(Serializer):
 
     def validate_rol(self, value):
         if validarEsNumerico(value):
-            if 0 < value < 4:
+            rol = Rol.objects.filter(rol_id=value)
+            if rol.exists():
                 return value
-            raise serializers.ValidationError("El rol debe ser un número entero entre 1 y 3.")
-        raise serializers.ValidationError("El rol debe ser un número entero.")
+            else:
+                raise serializers.ValidationError("El rol no está registrado.")
+        else:
+            raise serializers.ValidationError("El rol debe ser un número entero.")
 
     def save(self, **kwargs):
         username = self.data.get('username')
         password = self.data.get('password')
         rol = self.data.get('rol')
-        if rol == 1:
+        role = Rol.objects.filter(rol_id=rol, rol_tipo='SUPERUSUARIO')
+        if role.exists():
             return Usuario.objects.create_superuser(
                 username=username,
-                password=password)
-        elif rol == 2:
-            return Usuario.objects.create_admin(
-                username=username,
-                password=password)
-        elif rol == 3:
-            return Usuario.objects.create_employee(
-                username=username,
-                password=password)
+                password=password,
+                rol=rol,
+            )
         else:
-            raise serializers.ValidationError("El rol debe ser un número entero.")
+            return Usuario.objects.create_user(
+                username=username,
+                password=password,
+                rol=rol
+            )
 

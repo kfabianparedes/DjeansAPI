@@ -24,7 +24,6 @@ class Login(TokenObtainPairView):
             if login_serializer.is_valid():  # Validamos los campos ingresados y verificamos que exista el username
                 user = authenticate(username=username, password=password)
                 if user:  # Si la autenticación es correcta retorna el "username" sino "None"
-                    print(user)
                     login_serializer = self.serializer_class(data=request.data)
                     if login_serializer.is_valid():  # and
                         if login_serializer.validated_data.get('access') and login_serializer.validated_data.get(
@@ -39,6 +38,7 @@ class Login(TokenObtainPairView):
                                 'refresh': login_serializer.validated_data.get('refresh'),
                                 'username': user_serializer.data.get('username'),
                                 'id': user_serializer.data.get('id'),
+                                'rol': user_serializer.data.get('rol')
                             }
                             return respuestaJson(status.HTTP_200_OK, mensaje, data, True)
                         else:

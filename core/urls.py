@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from apps.roles.views.rol_view import RolView
 from apps.usuarios.views.autenticacion.login_view import Login
 from apps.usuarios.views.autenticacion.logout_view import Logout
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
@@ -23,6 +24,7 @@ urlpatterns = [
     path('login', Login.as_view(), name='login'),
     path('logout', Logout.as_view(), name='logout'),
     path('usuarios/', include('apps.usuarios.urls')),
+    path('roles/', include('apps.roles.urls')),
     path('categorias/', include('apps.categorias.urls')),
     path('proveedores/', include('apps.proveedores.urls')),
     path('sucursales/', include('apps.sucursales.urls')),
