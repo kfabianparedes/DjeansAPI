@@ -81,7 +81,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError("El nombre del proveedor no debe superar los 50 caracteres.")
         else:
-            raise serializers.ValidationError("El nombre del provedor debe tener mas de 3 caracteres.")
+            raise serializers.ValidationError("El nombre del provedor debe tener menos de 4 caracteres.")
 
     def validate_pro_razon_social(self, value):
         if len(str.strip(value)) > 4:
@@ -97,7 +97,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError("La razón social del proveedor no debe superar los 50 caracteres.")
         else:
-            raise serializers.ValidationError("La razón social del provedor debe tener mas de 4 caracteres.")
+            raise serializers.ValidationError("La razón social del provedor debe tener menos de 5 caracteres.")
 
     def validate_pro_email(self, value):
         if len(str.strip(value)) > 10:
@@ -112,7 +112,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError("El email del proveedor no debe superar los 50 caracteres.")
         else:
-            raise serializers.ValidationError("El email del provedor debe tener mas de 10 caracteres.")
+            raise serializers.ValidationError("El email del provedor no debe tener menos de 11 caracteres.")
 
     def validate_pro_telefono1(self, value):
         if len(value) == 9:
@@ -132,7 +132,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError('El teléfono 2 del proveedor debe tener valores numericos.')
         else:
-            raise serializers.ValidationError("El teléfono 2 del proveedor no debe tener mas de 9 caracteres.")
+            raise serializers.ValidationError("El teléfono 2 del proveedor debe tener de 9 caracteres.")
 
     def validate_pro_direccion1(self, value):
         if len(str.strip(value)) > 4:
@@ -144,7 +144,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError("La dirección 1 del proveedor no debe superar los 50 caracteres.")
         else:
-            raise serializers.ValidationError("La dirección 1 del provedor debe tener mas de 4 caracteres.")
+            raise serializers.ValidationError("La dirección 1 del provedor debe tener menos de 5 caracteres.")
 
     def validate_pro_direccion2(self, value):
         if len(value) == 0:
@@ -158,7 +158,7 @@ class ProveedorCrearSerializer(Serializer):
             else:
                 raise serializers.ValidationError("La dirección 2 del proveedor no debe superar los 50 caracteres.")
         else:
-            raise serializers.ValidationError("La dirección 2 del provedor debe tener mas de 4 caracteres.")
+            raise serializers.ValidationError("La dirección 2 del provedor debe tener menos de 5 caracteres.")
 
     def validate_pro_estado(self, value):
         if type(value) == bool:
@@ -173,7 +173,10 @@ class ProveedorCrearSerializer(Serializer):
         pro_raz_so = str(data['pro_razon_social']).upper()
         pro_email = str(data['pro_email']).upper()
         pro_tel1 = str(codigo + data['pro_telefono1']).upper()
-        pro_tel2 = str(codigo + data['pro_telefono2']).upper()
+        if str(data['pro_telefono2']) != '':
+            pro_tel2 = str(codigo + data['pro_telefono2']).upper()
+        else:
+            pro_tel2 =  str(data['pro_telefono2']).upper()
         pro_dir1 = str(data['pro_direccion1']).upper()
         pro_dir2 = str(data['pro_direccion2']).upper()
         proveedor_nuevo = Proveedor(pro_ruc=pro_ruc, pro_nombre=pro_nom, pro_razon_social=pro_raz_so, pro_email=pro_email, pro_telefono1=pro_tel1,
