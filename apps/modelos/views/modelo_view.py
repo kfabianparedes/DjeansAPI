@@ -4,9 +4,9 @@ from rest_framework.viewsets import GenericViewSet
 
 from apps.modelos import models
 from apps.modelos.models import Modelo
-from apps.modelos.serializers.actualizar_model_serializer import ModeloActualizarSerializer
+from apps.modelos.serializers.modelo_actualizar_serializer import ModeloActualizarSerializer
 from apps.modelos.serializers.modelo_serializer import ModeloSerializer
-from apps.modelos.serializers.registrar_modelo_serializer import ModeloCrearSerializer
+from apps.modelos.serializers.modelo_registrar_serializer import ModeloRegistrarSerializer
 from core.assets.permissions.user_permission import EstaAutenticadoPermission, SuperUsuarioPermission, \
     MetodoNoPermitidoPermission
 from core.assets.reutilizable.funciones_reutilizables import respuestaJson
@@ -32,7 +32,7 @@ class ModeloView(GenericViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request):
-        try:
+        try: # Se muestra todos los modelos sin importar estado para el super usuario y solo activos para otros
             if request.user.is_superuser:
                 queryset = models.Modelo.objects.all().order_by('-mod_estado', 'mod_descripcion')
                 modelo_serializer = ModeloSerializer(queryset, many=True)
@@ -46,7 +46,7 @@ class ModeloView(GenericViewSet):
 
     def create(self, request):
         try:
-            crear_modelo_serializer = ModeloCrearSerializer(data=request.data)
+            crear_modelo_serializer = ModeloRegistrarSerializer(data=request.data)
             if crear_modelo_serializer.is_valid():
                 crear_modelo_serializer.create(request.data)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_modelo_serializer.data, True)

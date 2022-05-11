@@ -19,7 +19,7 @@ def validarEsMayorQueCero(value):
 
 
 def validarCaracteresAlfabeticoConEspacios(value):
-    if re.match(r"^[a-zñáéíóúA-ZÑÁÉÍÓÚ ]+$", str(value)):
+    if re.match(r"^[a-zñáéíóúA-ZÑÁÉÍÓÚ' ]+$", str(value)):
         return True
     return False
 

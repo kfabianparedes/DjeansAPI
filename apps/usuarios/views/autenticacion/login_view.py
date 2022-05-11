@@ -4,6 +4,8 @@ from django.utils import timezone
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from apps.usuarios.models import Usuario
+from apps.roles.models import Rol
+from apps.roles.serializers.rol_serializer import RolSerializer
 from apps.usuarios.serializers.autenticacion.login_serializer import LoginSerializer
 from apps.usuarios.serializers.usuario.usuario_serializer import UsuarioSerializer
 from core.assets.permissions.user_permission import *
@@ -33,12 +35,17 @@ class Login(TokenObtainPairView):
                             if usuario != 1:
                                 mensaje += " No se pudo actualizar el último inicio de sesión."
                             user_serializer = UsuarioSerializer(user)
+                            rol = Rol.objects.get(rol_id=user_serializer.data.get('rol'));
+                            print(rol)
+                            role = RolSerializer(rol)
+                            print(role.data)
                             data = {
                                 'access': login_serializer.validated_data.get('access'),
                                 'refresh': login_serializer.validated_data.get('refresh'),
                                 'username': user_serializer.data.get('username'),
                                 'id': user_serializer.data.get('id'),
-                                'rol': user_serializer.data.get('rol')
+                                'rol': user_serializer.data.get('rol'),
+                                'tipoRol': role.data.get('rol_tipo'),
                             }
                             return respuestaJson(status.HTTP_200_OK, mensaje, data, True)
                         else:

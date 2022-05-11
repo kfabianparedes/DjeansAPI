@@ -5,7 +5,7 @@ from apps.modelos.models import Modelo
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
 
 
-class ModeloCrearSerializer(Serializer):
+class ModeloRegistrarSerializer(Serializer):
     mod_descripcion = serializers.CharField(required=True,
                                             error_messages={
                                                 "required": "El nombre del modelo es requerido.",

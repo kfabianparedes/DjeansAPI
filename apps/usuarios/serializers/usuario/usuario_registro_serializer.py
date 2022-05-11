@@ -63,7 +63,7 @@ class UsuarioRegistrarSerializer(Serializer):
             raise serializers.ValidationError("El rol debe ser un número entero.")
 
     def save(self, **kwargs):
-        username = self.data.get('username')
+        username = str(self.data.get('username')).upper()
         password = self.data.get('password')
         rol = self.data.get('rol')
         role = Rol.objects.filter(rol_id=rol, rol_tipo='SUPERUSUARIO')

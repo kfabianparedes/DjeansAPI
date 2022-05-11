@@ -51,7 +51,7 @@ class ColorView(GenericViewSet):
                 color_serializer = ColorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, color_serializer.data, True)
             else:
-                queryset = models.Color.objects.filter(cat_estado=True).order_by('-col_descripcion')
+                queryset = models.Color.objects.filter(col_estado=True).order_by('-col_descripcion')
                 color_serializer = ColorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, color_serializer.data, True)
 

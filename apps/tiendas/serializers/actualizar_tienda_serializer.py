@@ -2,11 +2,9 @@
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from apps.sucursales.models import Sucursal
-from apps.sucursales.serializers.sucursal_serializer import SucursalSerializer
 
 from apps.tiendas.models import Tienda
-from apps.tiendas.serializers.tienda_serializer import TiendaSerializer
-from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspaciosNumerosGuiones
 
 
 class TiendaActualizarSerializer(Serializer):
@@ -34,10 +32,10 @@ class TiendaActualizarSerializer(Serializer):
     tie_suc_id=serializers.ReadOnlyField(source='sucursal.suc_id')
 
     def validate_tie_nombre(self, value):
-        if len(str.strip(value)) > 4:
+        if len(str.strip(value)) >= 4:
             if len(value) <= 30:
-                if validarCaracteresAlfabeticoConEspacios(value):
-                    nombre_tienda = Tienda.objects.filter(tie_nombre=value)
+                if validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
+                    nombre_tienda = Tienda.objects.filter(tie_nombre=value).exclude(tie_id=self.instance.tie_id)
                     if not nombre_tienda.exists():
                         return value
                     else:
@@ -74,7 +72,7 @@ class TiendaActualizarSerializer(Serializer):
         # instanciamientoSucursal.suc_id=data.get('tie_suc_id')
         # instance.tie_suc_id=data.get('tie_suc_id',datoSucursal.suc_id)
 
-        instance.tie_nombre=str(data.get('tie_nombre', instance.tie_nombre))
+        instance.tie_nombre = str(data.get('tie_nombre', instance.tie_nombre))
         instance.tie_estado = data.get('tie_estado', instance.tie_estado)
-
+        print(instance)
         return instance.save()

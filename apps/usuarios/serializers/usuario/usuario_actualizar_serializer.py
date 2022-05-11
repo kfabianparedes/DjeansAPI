@@ -62,7 +62,7 @@ class UsuarioActualizarSerializer(Serializer):
 
     def update(self, instance, data):
         instance.is_active = data.get('is_active', instance.is_active)
-        instance.username = str.strip(data.get('username', instance.username))
+        instance.username = str.strip(data.get('username', instance.username)).upper()
         instance.rol = data.get('rol', instance.rol)
         role = Rol.objects.filter(rol_id=instance.rol, rol_tipo='SUPERUSUARIO')
         if role.exists():

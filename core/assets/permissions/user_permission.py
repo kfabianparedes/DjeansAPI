@@ -20,7 +20,7 @@ class SuperUsuarioPermission(IsAdminUser):
     # Declaro la respuesta que deseo para este permiso
     respuesta = {
         "code": status.HTTP_403_FORBIDDEN,
-        'message': 'El usuario no es super usuario.',
+        'message': 'No tiene los permisos requeridos.',
         "data": None
     }
 

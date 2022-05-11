@@ -32,5 +32,6 @@ urlpatterns = [
     path('colores/', include('apps.colores.urls')),
     path('modelos/', include('apps.modelos.urls')),
     path('tallas/', include('apps.tallas.urls')),
+    path('marcas/', include('apps.marcas.urls')),
 
 ] + router.urls

@@ -5,30 +5,30 @@ from rest_framework.serializers import Serializer
 from apps.sucursales.models import Sucursal
 
 from apps.tiendas.models import Tienda
-from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
+from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspaciosNumerosGuiones
 
 
 class TiendaCrearSerializer(Serializer):
     tie_nombre = serializers.CharField(required=True,
-                                        error_messages={"required": "El nombre de la Tienda es requerido.",
-                                                    "blank": "El nombre de la Tienda no debe estar vacio",
-                                                    "invalid": "El nombre de la Tienda debe ser valido.",
-                                                    })
+                                       error_messages={"required": "El nombre de la Tienda es requerido.",
+                                                       "blank": "El nombre de la Tienda no debe estar vacio",
+                                                       "invalid": "El nombre de la Tienda debe ser valido.",
+                                                       })
     tie_estado = serializers.BooleanField(required=True,
-                                            error_messages={"required": "El estado de la Tienda es requerido.",
-                                                        "blank": "El estado de la Tienda no debe estar vacio",
-                                                        "invalid": "El estado de la Tienda debe ser valido.",
-                                                        })
+                                          error_messages={"required": "El estado de la Tienda es requerido.",
+                                                          "blank": "El estado de la Tienda no debe estar vacio",
+                                                          "invalid": "El estado de la Tienda debe ser valido.",
+                                                          })
     tie_suc_id = serializers.IntegerField(required=True,
-                                            error_messages={"required": "El id de la Sucursal es requerido.",
-                                                        "blank": "El id de la Sucursal no debe estar vacio",
-                                                        "invalid": "El id de la Sucursal debe ser valido.",
-                                                        })
+                                          error_messages={"required": "El id de la Sucursal es requerido.",
+                                                          "blank": "El id de la Sucursal no debe estar vacio",
+                                                          "invalid": "El id de la Sucursal debe ser valido.",
+                                                          })
 
     def validate_tie_nombre(self, value):
-        if len(str.strip(value)) > 4:
+        if len(str.strip(value)) >= 4:
             if len(value) <= 30:
-                if validarCaracteresAlfabeticoConEspacios(value):
+                if validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
                     nombre_tienda = Tienda.objects.filter(tie_nombre=value)
                     if not nombre_tienda.exists():
                         return value
