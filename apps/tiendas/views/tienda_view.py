@@ -76,3 +76,25 @@ class TiendaView(GenericViewSet):
             return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La Tienda no existe.")
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
+    def destroy (self, request, pk=None):
+            try:
+                tie_id_buscado = self.kwargs['pk']
+                print("valor de Id")
+                print(tie_id_buscado)
+                if validarEsNumerico(tie_id_buscado) and validarEsMayorQueCero(tie_id_buscado):
+                    tienda_obtenida = Tienda.objects.get(tie_id=tie_id_buscado)
+                    tienda_actualizado = TiendaSerializer(tienda_obtenida)
+                    filas_modificadas = Tienda.objects.filter(tie_id=tie_id_buscado).update(
+                        tie_estado=not tienda_actualizado.data.get('tie_estado'))
+                    if filas_modificadas == 1:
+                        return respuestaJson(status.HTTP_202_ACCEPTED, SUCCESS_MESSAGE, success=True)
+                    else:
+                        mensaje = 'La Tienda no existe o no se ha podido desactivar/activar.'
+                        return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+                else:
+                    mensaje = 'Los parámetros deben ser numéricos y mayores a 0.'
+                    return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=mensaje)
+            except Tienda.DoesNotExist:
+                return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message="La Tienda no existe.")
+            except DatabaseError:
+                return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)

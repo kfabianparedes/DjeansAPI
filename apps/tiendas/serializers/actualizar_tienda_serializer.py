@@ -1,4 +1,5 @@
 
+from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 from apps.sucursales.models import Sucursal
@@ -28,8 +29,12 @@ class TiendaActualizarSerializer(Serializer):
     #                                         error_messages={"required": "El id de la Sucursal es requerido.",
     #                                                     "blank": "El id de la Sucursal no debe estar vacio",
     #                                                     "invalid": "El id de la Sucursal debe ser valido.",
-    #                                                     })
+    # 
+    #                                                    })
     tie_suc_id=serializers.ReadOnlyField(source='sucursal.suc_id')
+    # tie_suc_id=serializers.ReadOnlyField(source='SUCURSAL.SUC_ID')
+    
+
 
     def validate_tie_nombre(self, value):
         if len(str.strip(value)) >= 4:
@@ -55,24 +60,7 @@ class TiendaActualizarSerializer(Serializer):
             raise serializers.ValidationError("El estado de la Tienda solo puede ser Verdadero o Falso")
 
     def update(self, instance, data):
-
-        print("DATA:  ", data)
-        # instanciamiento = Sucursal()
-        # instanciamiento.suc_id = data.get('tie_suc_id',instance.tie_suc_id)
-        # instance.tie_suc_id=int(instanciamiento)
-
-
-        # METODO 1
-        # GRABA LA EDICION PERO MUESTRA MENSAJE DE ERROR
-        instanciamientoSucursal=Sucursal()
-        instanciamientoSucursal.tie_suc_id=int(data.get('tie_suc_id',instance.tie_suc_id))
-        
-        #METODO 2
-
-        # instanciamientoSucursal.suc_id=data.get('tie_suc_id')
-        # instance.tie_suc_id=data.get('tie_suc_id',datoSucursal.suc_id)
-
+        instance.tie_suc_id=Sucursal(data.get('tie_suc_id',instance.tie_suc_id))
         instance.tie_nombre = str(data.get('tie_nombre', instance.tie_nombre))
         instance.tie_estado = data.get('tie_estado', instance.tie_estado)
-        print(instance)
         return instance.save()
