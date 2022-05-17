@@ -59,15 +59,8 @@ class TiendaCrearSerializer(Serializer):
             raise serializers.ValidationError("El estado de la Tienda solo puede ser Verdadero o Falso")
 
     def create(self, data):
-
         nombre = str(data['tie_nombre']).upper()
         instanciamiento = Sucursal()
         instanciamiento.suc_id = str(data["tie_suc_id"])
-
         tienda_nueva = Tienda(tie_nombre=nombre, tie_estado=True, tie_suc_id=instanciamiento)
-        print("TIENDA NUEVA: ", tienda_nueva)
-
-        # nombre = str(data['tie_nombre']).upper()
-        # nombreSucursal=Sucursal.suc_id
-        # tienda_nueva=Tienda(tie_nombre=nombre,tie_estado=True,tie_suc_id=nombreSucursal)
         tienda_nueva.save()

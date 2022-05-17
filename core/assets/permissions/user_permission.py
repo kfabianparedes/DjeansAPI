@@ -5,7 +5,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated, BasePermiss
 
 class UsuarioPropioPermission(BasePermission):
     message = 'El usuario solo puede ser actualizado por el mismo.'
-    response = {"code": status.HTTP_403_FORBIDDEN,'message': message,"data": None}
+    respuesta = {
+        "code": status.HTTP_403_FORBIDDEN,
+        'success': False,
+        'message': message,
+        "data": None
+    }
 
     def has_object_permission(self, request, view, obj):
         if bool(obj.user == request.user or request.user.is_superuser):
@@ -16,10 +21,12 @@ class UsuarioPropioPermission(BasePermission):
             permision.detail = self.respuesta
             raise permision
 
+
 class SuperUsuarioPermission(IsAdminUser):
     # Declaro la respuesta que deseo para este permiso
     respuesta = {
         "code": status.HTTP_403_FORBIDDEN,
+        'success': False,
         'message': 'No tiene los permisos requeridos.',
         "data": None
     }
@@ -38,6 +45,7 @@ class EstaAutenticadoPermission(IsAuthenticated):
     # Declaro la respuesta que deseo para este permiso
     respuesta = {
         "code": status.HTTP_401_UNAUTHORIZED,
+        'success': False,
         'message': 'El usuario no está autenticado.',
         "data": None
     }
@@ -55,6 +63,7 @@ class EstaAutenticadoPermission(IsAuthenticated):
 class MetodoSegurosPermission(BasePermission):
     respuesta = {
         "code": status.HTTP_405_METHOD_NOT_ALLOWED,
+        'success': False,
         'message': 'Método HTTP no permitido.',
         "data": None
     }
@@ -69,27 +78,32 @@ class MetodoSegurosPermission(BasePermission):
             permision.detail = self.respuesta
             raise permision
 
+
 # Para denegar a las peticiones que no necesitamos en nuestro view
 class MetodoNoPermitidoPermission(BasePermission):
     respuesta = {
         "code": status.HTTP_405_METHOD_NOT_ALLOWED,
+        'success': False,
         'message': 'Método HTTP no permitido.',
         "data": None
     }
-    def has_permission(self, request, view):
 
+    def has_permission(self, request, view):
         permision = MethodNotAllowed(method=request.method)
         permision.detail = self.respuesta
         raise permision
 
+
 class MetodoPostSeguroPermission(BasePermission):
     respuesta = {
         "code": status.HTTP_405_METHOD_NOT_ALLOWED,
+        'success': False,
         'message': 'Método HTTP no permitido.',
         "data": None
     }
+
     def has_permission(self, request, view):
-        if request.method == 'POST' or request.method =='OPTIONS' or request.method == 'HEADS':
+        if request.method == 'POST' or request.method == 'OPTIONS' or request.method == 'HEADS':
             return True
         permision = MethodNotAllowed(method=request.method)
         permision.detail = self.respuesta

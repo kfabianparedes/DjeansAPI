@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
@@ -10,32 +9,27 @@ from core.assets.validations.obtener_error_serializer import validarCaracteresAl
 
 class TiendaActualizarSerializer(Serializer):
     tie_id = serializers.IntegerField(required=True,
-                                    error_messages={
-                                        "required": "El ID de la Tienda es requerido.",
-                                        "blank": "El ID de la Tienda no debe estar vacío.",
-                                        "invalid": "El ID de la Tienda debe ser válido.",
-                                    })
+                                      error_messages={
+                                          "required": "El ID de la tienda es requerido.",
+                                          "blank": "El ID de la tienda no debe estar vacío.",
+                                          "invalid": "El ID de la tienda debe ser válido.",
+                                      })
     tie_nombre = serializers.CharField(required=True,
-                                    error_messages={"required": "El nombre de la Tienda es requerido.",
-                                                    "blank": "El nombre de la Tienda no debe estar vacio",
-                                                    "invalid": "El nombre de la Tienda debe ser valido.",
-                                                    })
+                                       error_messages={"required": "El nombre de la tienda es requerido.",
+                                                       "blank": "El nombre de la tienda no debe estar vacío",
+                                                       "invalid": "El nombre de la tienda debe ser valido.",
+                                                       })
     tie_estado = serializers.BooleanField(required=True,
-                                        error_messages={"required": "El estado de la Tienda es requerido.",
-                                                        "blank": "El estado de la Tienda no debe estar vacio",
-                                                        "invalid": "El estado de la Tienda debe ser valido.",
-                                                        })
-    # tie_suc_id = serializers.IntegerField(required=True,
-    #                                         error_messages={"required": "El id de la Sucursal es requerido.",
-    #                                                     "blank": "El id de la Sucursal no debe estar vacio",
-    #                                                     "invalid": "El id de la Sucursal debe ser valido.",
-    # 
-    #                                                    })
-    tie_suc_id=serializers.ReadOnlyField(source='sucursal.suc_id')
-    # tie_suc_id=serializers.ReadOnlyField(source='SUCURSAL.SUC_ID')
-    
+                                          error_messages={"required": "El estado de la tienda es requerido.",
+                                                          "blank": "El estado de la tienda no debe estar vacío",
+                                                          "invalid": "El estado de la tienda debe ser valido.",
+                                                          })
 
-
+    tie_suc_id = serializers.PrimaryKeyRelatedField(queryset=Sucursal.objects.all(), many=False, required=True,
+                                                    error_messages={"required": "El id de la Sucursal es requerido.",
+                                                                    "blank": "El id de la Sucursal no debe estar vacío",
+                                                                    "invalid": "El id de la Sucursal debe ser valido.",
+                                                                    })
     def validate_tie_nombre(self, value):
         if len(str.strip(value)) >= 4:
             if len(value) <= 30:
@@ -60,7 +54,7 @@ class TiendaActualizarSerializer(Serializer):
             raise serializers.ValidationError("El estado de la Tienda solo puede ser Verdadero o Falso")
 
     def update(self, instance, data):
-        instance.tie_suc_id=Sucursal(data.get('tie_suc_id',instance.tie_suc_id))
+        instance.tie_suc_id = Sucursal(data.get('tie_suc_id', instance.tie_suc_id))
         instance.tie_nombre = str(data.get('tie_nombre', instance.tie_nombre))
         instance.tie_estado = data.get('tie_estado', instance.tie_estado)
         return instance.save()

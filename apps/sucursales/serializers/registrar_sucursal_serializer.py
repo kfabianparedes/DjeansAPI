@@ -2,7 +2,6 @@ from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
 from apps.sucursales.models import Sucursal
-from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspacios
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfabeticoConEspaciosNumerosGuiones
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos
 
@@ -45,14 +44,14 @@ class SucursalCrearSerializer(Serializer):
         if len(str.strip(value)) >= 4:
             if len(value) <= 30:
                 if validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
-                    direccion_sucursal = Sucursal.objects.filter(suc_direccion=value)
+                    return value
                 else:
-                    raise serializers.ValidationError('La direccion de la sucursal debe contener caracteres alfabéticos.')
+                    raise serializers.ValidationError('La dirección de la sucursal debe contener caracteres alfabéticos.')
 
             else:
-                raise serializers.ValidationError("La direccion de la sucursal es inválida.")
+                raise serializers.ValidationError("La dirección de la sucursal es inválida.")
         else:
-            raise serializers.ValidationError("La direccion de la sucursal no debe tener menos de 4 caracteres.")
+            raise serializers.ValidationError("La dirección de la sucursal no debe tener menos de 4 caracteres.")
 
     def validate_suc_estado(self, value):
         if type(value) == bool:
