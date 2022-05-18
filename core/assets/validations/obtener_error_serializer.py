@@ -44,6 +44,11 @@ def validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
         return True
     return False
 
+def validarCaracteresAlfanumericosGuiones(value):
+    if re.match(r"[a-zñáéíóú\- A-ZÑÁÉÍÓÚ0-9]+$", str(value)):
+        return True
+    return False
+
 def validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
     if re.match(r"[a-zñáéíóú\-.# A-ZÑÁÉÍÓÚ 0-9]+$", str(value)):
         return True

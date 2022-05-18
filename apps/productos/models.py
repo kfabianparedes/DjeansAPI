@@ -3,13 +3,13 @@ from django.db import models
 
 class Producto(models.Model):
     prod_id = models.AutoField(primary_key=True, verbose_name='ID')
-    prod_codigo = models.CharField(verbose_name='Código', unique=True, blank=True, max_length = 10)
-    prod_descripcion = models.CharField(verbose_name='Descripción', max_length=50)
+    prod_codigo = models.CharField(verbose_name='Código',null=True, unique=False, blank=True, max_length = 10)
+    prod_descripcion = models.CharField(verbose_name='Descripción', max_length=100)
     prod_precio_compra_base = models.DecimalField(verbose_name='Precio de compra base', max_digits = 5 , decimal_places = 2)
     prod_precio_compra = models.DecimalField(verbose_name='Precio de compra', max_digits = 5 , decimal_places = 2)
     prod_precio_venta_base = models.DecimalField(verbose_name='Precio de venta base', max_digits = 5 , decimal_places = 2)
     prod_precio_venta = models.DecimalField(verbose_name='Precio de venta', max_digits = 5 , decimal_places = 2)
-    prod_promocion = models.DecimalField(verbose_name='Promoción', max_digits = 5 , decimal_places = 2)
+    prod_descuento_promocion = models.DecimalField(verbose_name='Descuento o promoción', max_digits = 5, decimal_places = 2)
 
     proveedor = models.IntegerField(verbose_name='Proveedor',blank=False,null=False)
     categoria = models.IntegerField(verbose_name='Categoría',blank=False,null=False)
