@@ -10,9 +10,9 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djeansapi',
+        'NAME': 'djeans_local',
         'USER': 'root',
-        'PASSWORD': 'admin',
+        'PASSWORD': '1234',
         'HOST': 'localhost',
         'PORT': 3306
     }
