@@ -114,7 +114,7 @@ class ProveedorActualizarSerializer(Serializer):
                     email = Proveedor.objects.filter(pro_email=value).exclude(
                         pro_id=self.instance.pro_id)
                     if email.exists():
-                        raise serializers.ValidationError("El email ya se encuntra Registrado")
+                        raise serializers.ValidationError("El email ya se encunetra Registrado")
                     else:
                         return value
                 else:
@@ -127,7 +127,12 @@ class ProveedorActualizarSerializer(Serializer):
     def validate_pro_telefono1(self, value):
         if len(value) == 9:
             if validarEsNumerico(value):
-                return value
+                codigo = "+51"
+                if Proveedor.objects.filter(pro_telefono1=codigo + value).exclude(pro_id=self.instance.pro_id).exists() or Proveedor.objects.filter(
+                        pro_telefono2=codigo + value).exclude(pro_id=self.instance.pro_id).exists():
+                    raise serializers.ValidationError("El teléfono 1 ingresado ya es utilizado por otro proveedor.")
+                else:
+                    return value
             else:
                 raise serializers.ValidationError('El teléfono 1 del proveedor debe tener valores numericos.')
         else:
@@ -138,7 +143,13 @@ class ProveedorActualizarSerializer(Serializer):
             return value
         if len(value) == 9:
             if validarEsNumerico(value):
-                return value
+                codigo = "+51"
+                if Proveedor.objects.filter(pro_telefono1=codigo + value).exclude(
+                        pro_id=self.instance.pro_id).exists() or Proveedor.objects.filter(
+                        pro_telefono2=codigo + value).exclude(pro_id=self.instance.pro_id).exists():
+                    raise serializers.ValidationError("El teléfono 2 ingresado ya es utilizado por otro proveedor.")
+                else:
+                    return value
             else:
                 raise serializers.ValidationError('El teléfono 2 del proveedor debe tener valores numericos.')
         else:
@@ -148,7 +159,12 @@ class ProveedorActualizarSerializer(Serializer):
         if len(str.strip(value)) > 4:
             if len(value) <= 30:
                 if validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
-                    return value
+                    if Proveedor.objects.filter(pro_direccion1=value).exclude(
+                            pro_id=self.instance.pro_id).exists() or Proveedor.objects.filter(
+                            pro_direccion2=value).exclude(pro_id=self.instance.pro_id).exists():
+                        raise serializers.ValidationError("La direccion 1 ingresada ya es utilizada por otro proveedor.")
+                    else:
+                        return value
                 else:
                     raise serializers.ValidationError('La dirección 1 del proveedor tiene el formato incorrecto.')
             else:
@@ -162,7 +178,13 @@ class ProveedorActualizarSerializer(Serializer):
         if len(str.strip(value)) > 4:
             if len(value) <= 50:
                 if validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
-                    return value
+                    if Proveedor.objects.filter(pro_direccion1=value).exclude(
+                            pro_id=self.instance.pro_id).exists() or Proveedor.objects.filter(
+                                pro_direccion2=value).exclude(pro_id=self.instance.pro_id).exists():
+                        raise serializers.ValidationError(
+                            "La direccion 2 ingresada ya es utilizada por otro proveedor.")
+                    else:
+                        return value
                 else:
                     raise serializers.ValidationError('La dirección 2 del proveedor tiene el formato incorrecto.')
             else:
@@ -175,6 +197,18 @@ class ProveedorActualizarSerializer(Serializer):
             return value
         else:
             raise serializers.ValidationError("El estado del proveedor solo puede ser Verdadero o Falso")
+
+    def validate(self, data):
+
+        if data['pro_direccion2'] != '':
+            if data['pro_direccion1'] == data['pro_direccion2']:
+                raise serializers.ValidationError("La dirección 2 no puede ser igual a la dirección 1.")
+            else:
+                if data['pro_telefono2'] != '':
+                    if data['pro_telefono1'] == data['pro_telefono2']:
+                        raise serializers.ValidationError("El teléfono 2 no puede ser igual al teléfono 1")
+
+        return data
 
     def update(self, instance, data):
         codigo = '+51'

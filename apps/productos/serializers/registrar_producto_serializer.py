@@ -126,7 +126,7 @@ class ProductoRegistrarSerializer(Serializer):
     def validate_prod_descripcion(self,value):
 
         if len(str.strip(value))>= 5:
-            if len(value) <= 50:
+            if len(value) <= 100:
                 if validarCaracteresAlfaNumericos(value):
                     prod_descripcion = Producto.objects.filter(prod_descripcion=value)
                     if not prod_descripcion.exists():
@@ -136,7 +136,7 @@ class ProductoRegistrarSerializer(Serializer):
                 else:
                     raise serializers.ValidationError("La descripción del producto solo acepta caracteres alfabéticos y espacios.")
             else:
-                raise serializers.ValidationError("La descripción del producto no debe tener más de 50 caracteres.")
+                raise serializers.ValidationError("La descripción del producto no debe tener más de 100 caracteres.")
         else:
             raise serializers.ValidationError("La descripción del producto no debe tener menos de 5 caracteres.")
 
