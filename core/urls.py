@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from apps.roles.views.rol_view import RolView
+from apps.tipo_comprobante.views import TipoComprobanteView
 from apps.usuarios.views.autenticacion.login_view import Login
 from apps.usuarios.views.autenticacion.logout_view import Logout
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
@@ -15,7 +16,7 @@ router = DefaultRouter()
 router.register('tipos-de-documento', TipoDeDocumentoView, basename='tiposDeDocumento')
 router.register('informacion-personal', InformacionPersonalView, basename='informacionPersonal')
 router.register('estado-civil', EstadoCivilView, basename='estadoCivil')
-
+router.register('tipos-de-comprobante', TipoComprobanteView, basename='tiposDeComprobante')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

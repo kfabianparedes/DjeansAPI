@@ -17,12 +17,12 @@ class DetalleDeCompraRegistrarSerializer(Serializer):
                                                      'invalid': 'La cantidad del producto en el detalle debe ser un '
                                                                 'número entero.',
                                                  })
-    det_comp_monto = serializers.DecimalField(max_digits=5, decimal_places=2,
-                                              error_messages={
-                                                  "required": "El monto del detalle es requerido.",
-                                                  "blank": "El monto del detalle no debe estar vacío",
-                                                  "invalid": "El monto del detalle debe ser válido.",
-                                              })
+    det_comp_importe = serializers.DecimalField(max_digits=5, decimal_places=2,
+                                                error_messages={
+                                                    "required": "El monto del detalle es requerido.",
+                                                    "blank": "El monto del detalle no debe estar vacío",
+                                                    "invalid": "El monto del detalle debe ser válido.",
+                                                })
     producto = serializers.IntegerField(required=True,
                                         error_messages={
                                             'required': 'El identificador del producto es requerido',
@@ -42,7 +42,7 @@ class DetalleDeCompraRegistrarSerializer(Serializer):
         else:
             raise serializers.ValidationError("La cantidad de productos debe ser mayor a 0.")
 
-    def validate_det_comp_monto(self, value):
+    def validate_det_comp_importe(self, value):
         if not value <= 0:
             return value
         else:
@@ -70,14 +70,14 @@ class DetalleDeCompraRegistrarSerializer(Serializer):
 
     def save(self, **kwargs):
         det_comp_cantidad = self.data.get('det_comp_cantidad')
-        det_comp_monto = self.data.get('det_comp_monto')
+        det_comp_importe = self.data.get('det_comp_importe')
         producto = self.data.get('producto')
         compra_nueva = Compra()
         compra_nueva.comp_id = self.data.get('compra')
         compra = compra_nueva
         detalle_de_compra = DetalleDeCompra(
             det_comp_cantidad=det_comp_cantidad,
-            det_comp_monto=det_comp_monto,
+            det_comp_importe=det_comp_importe,
             producto=producto,
             compra=compra
         )

@@ -6,7 +6,7 @@ from apps.compras.models import Compra
 class DetalleDeCompra(models.Model):
     det_comp_id = models.AutoField(primary_key=True)
     det_comp_cantidad = models.IntegerField(verbose_name='Cantidad')
-    det_comp_monto = models.DecimalField(verbose_name='Monto detalle', max_digits=5, decimal_places=2)
+    det_comp_importe = models.DecimalField(verbose_name='Monto detalle', max_digits=5, decimal_places=2)
     producto = models.IntegerField(verbose_name='Producto')
     compra = models.ForeignKey(Compra, related_name='detalle_compra', on_delete=models.CASCADE)
 
@@ -16,4 +16,4 @@ class DetalleDeCompra(models.Model):
         verbose_name_plural = 'Detalles de compra'
 
     def _str_(self):
-        return f'Monto total : {(self.det_comp_monto * self.det_comp_cantidad)}'
+        return f'Monto total : {(self.det_comp_importe * self.det_comp_cantidad)}'

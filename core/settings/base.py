@@ -40,6 +40,7 @@ LOCAL_APPS = [
     'apps.guias_de_remision',
     'apps.compras',
     'apps.detalles_de_compra',
+    'apps.tipo_comprobante'
 ]
 
 THIRD_APPS = [

@@ -48,6 +48,7 @@ class CompraView(GenericViewSet):
                     compra.save()
                     last_purchase = Compra.objects.latest('comp_id')
                     purchase = CompraSerializer(last_purchase)
+
                     detalles = request.data.get('detalles')
                     for detail in detalles:
                         detail["compra"] = purchase.data.get('comp_id')
@@ -57,14 +58,16 @@ class CompraView(GenericViewSet):
                             return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                                  message=obtenerErrorSerializer(detalle))
                         detalle.save()
+
                     guia_remision = request.data.get('guia_remision')
-                    guia_remision["compra"] = purchase.data.get('comp_id')
-                    guia = GuiaDeRemisionRegistrarSerializer(data=guia_remision)
-                    if not guia.is_valid():
-                        transaction.set_rollback(rollback=True)
-                        return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(guia))
-                    guia.save()
-                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, success=True)
+                    if guia_remision:
+                        guia_remision["compra"] = purchase.data.get('comp_id')
+                        guia = GuiaDeRemisionRegistrarSerializer(data=guia_remision)
+                        if not guia.is_valid():
+                            transaction.set_rollback(rollback=True)
+                            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(guia))
+                        guia.save()
+                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, purchase.data, success=True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(compra))
         except DatabaseError:
