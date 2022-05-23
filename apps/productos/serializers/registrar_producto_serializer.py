@@ -127,7 +127,7 @@ class ProductoRegistrarSerializer(Serializer):
 
         if len(str.strip(value))>= 5:
             if len(value) <= 100:
-                if validarCaracteresAlfaNumericos(value):
+                if validarCaracteresAlfanumericosGuiones(value):
                     prod_descripcion = Producto.objects.filter(prod_descripcion=value)
                     if not prod_descripcion.exists():
                         return value
