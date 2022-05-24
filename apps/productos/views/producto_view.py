@@ -1,9 +1,12 @@
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
+from django.db import transaction
 
 from apps.productos import models
+from apps.tiendas import models as tiendaModels
 from apps.productos.models import Producto
+from apps.inventarios.serializers.registrar_inventario_serializer import InventarioRegistrarSerializer
 from apps.productos.serializers.producto_serializer import ProductoSerializer
 from apps.productos.serializers.registrar_producto_serializer import ProductoRegistrarSerializer
 from apps.productos.serializers.actualizar_producto_serializer import ProductoActualizarSerializer
@@ -45,13 +48,34 @@ class ProductoView(GenericViewSet):
         try:
             registrar_producto_serializer = ProductoRegistrarSerializer(data=request.data)
             if registrar_producto_serializer.is_valid():
-                print(registrar_producto_serializer.data)
                 if registrar_producto_serializer.data.get('prod_precio_compra') >= registrar_producto_serializer.data.get('prod_precio_venta'):
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                          message="El precio de compra no puede ser mayor o igual al precio de venta.")
 
-                registrar_producto_serializer.create(request.data)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, registrar_producto_serializer.data, True)
+                with transaction.atomic():
+                    registrar_producto_serializer.create(request.data)
+                    last_product = Producto.objects.latest('prod_id')
+                    product = ProductoSerializer(last_product)
+
+                    tiendas = tiendaModels.Tienda.objects.all()
+
+                    for tie in tiendas:
+
+                        inventario_agregar = {
+                            'producto':product.data.get('prod_id'),
+                            'tienda':tie.tie_id,
+                            'stock':0
+                        }
+
+                        inventario = InventarioRegistrarSerializer(data=inventario_agregar)
+
+                        if not inventario.is_valid():
+                            transaction.set_rollback(rollback=True)
+                            return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
+                                                 message=obtenerErrorSerializer(inventario))
+                        inventario.save()
+
+                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, registrar_producto_serializer.data, True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                      message=obtenerErrorSerializer(registrar_producto_serializer))

@@ -1,12 +1,14 @@
 from django.db import DatabaseError
 from rest_framework import status
 from rest_framework.viewsets import GenericViewSet
-
+from django.db import transaction
 from core.assets.permissions.user_permission import SuperUsuarioPermission, EstaAutenticadoPermission
 from core.assets.reutilizable.funciones_reutilizables import respuestaJson
 from core.assets.validations.obtener_error_serializer import *
 from core.settings.base import BD_ERROR_MESSAGE, SUCCESS_MESSAGE
 from apps.tiendas import models
+from apps.productos import models as productoModel
+from apps.inventarios.serializers.registrar_inventario_serializer import InventarioRegistrarSerializer
 
 from apps.tiendas.models import Tienda
 from apps.tiendas.serializers.actualizar_tienda_serializer import TiendaActualizarSerializer
@@ -45,8 +47,31 @@ class TiendaView(GenericViewSet):
         try:
             crear_tiendas_serializer = TiendaCrearSerializer(data=request.data)
             if crear_tiendas_serializer.is_valid():
-                crear_tiendas_serializer.create(request.data)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, crear_tiendas_serializer.data, True)
+                with transaction.atomic():
+                    crear_tiendas_serializer.create(request.data)
+                    last_shop = Tienda.objects.latest('tie_id')
+                    shop = TiendaSerializer(last_shop)
+
+                    productos = productoModel.Producto.objects.all()
+
+                    for pro in productos:
+
+                        inventario_agregar = {
+                            'producto':pro.prod_id,
+                            'tienda':shop.data.get('tie_id'),
+                            'stock':0
+                        }
+
+                        inventario = InventarioRegistrarSerializer(data=inventario_agregar)
+
+                        if not inventario.is_valid():
+                            transaction.set_rollback(rollback=True)
+                            return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
+                                                 message=obtenerErrorSerializer(inventario))
+                        inventario.save()
+
+                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, shop.data, success=True)
+
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                     message=obtenerErrorSerializer(crear_tiendas_serializer))
