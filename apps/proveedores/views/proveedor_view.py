@@ -31,11 +31,11 @@ class ProveedorView(GenericViewSet):
     def list(self, request):
         try:
             if request.user.is_superuser:
-                queryset = models.Proveedor.objects.all().order_by('pro_estado','pro_nombre')
+                queryset = models.Proveedor.objects.all().order_by('-pro_estado', 'pro_nombre')
                 proveedores_serializers = ProveedorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, proveedores_serializers.data, True)
             else:
-                queryset = models.Proveedor.objects.filter(pro_estado=True).order_by('pro_estado','pro_nombre')
+                queryset = models.Proveedor.objects.filter(pro_estado=True).order_by('pro_estado', 'pro_nombre')
                 proveedores_serializers = ProveedorSerializer(queryset, many=True)
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, proveedores_serializers.data, True)
         except DatabaseError:
