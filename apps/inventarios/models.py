@@ -12,7 +12,7 @@ class Inventario(models.Model):
     class Meta:
         db_table = 'inventario'
         verbose_name = 'Inventario'
-        verbose_name_plural = 'Inventario'
+        verbose_name_plural = 'Inventarios'
 
     def __str__(self):
         return f'Inventario de la tienda: {(self.tienda)}'

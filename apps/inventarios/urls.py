@@ -1,6 +1,7 @@
-#from rest_framework.routers import  import DefaultRouter
-#from .views.views import
+from rest_framework.routers import DefaultRouter
+from .views.views import InventarioView
 
-#router = DefaultRouter()
-#router.register(r'',)
-# urlpatterns = router.urls
+router = DefaultRouter()
+router.register(r'',InventarioView, basename='inventarios')
+
+urlpatterns = router.urls
