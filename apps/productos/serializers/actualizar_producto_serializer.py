@@ -173,8 +173,8 @@ class ProductoActualizarSerializer(Serializer):
             raise serializers.ValidationError("El precio de venta base no puede ser 0 o menor que 0.")
 
     def validate_prod_descuento_promocion(self, value):
-
-            if not value <= 0:
+        if value != -1:
+            if value > 0:
                 return value
             else:
                 raise serializers.ValidationError("El valor del descuento no puede ser 0 o menor que 0.")
@@ -269,7 +269,11 @@ class ProductoActualizarSerializer(Serializer):
         instance.prod_precio_compra = data.get('prod_precio_compra', instance.prod_precio_compra)
         instance.prod_precio_venta_base = data.get('prod_precio_venta_base', instance.prod_precio_venta_base)
         instance.prod_precio_venta = data.get('prod_precio_venta', instance.prod_precio_venta)
-        instance.prod_descuento_promocion = data.get('prod_descuento_promocion',instance.prod_descuento_promocion)
+        print(data.get('prod_descuento_promocion'))
+        if data.get('prod_descuento_promocion') != -1:
+            instance.prod_descuento_promocion = data.get('prod_descuento_promocion',instance.prod_descuento_promocion)
+        else:
+            instance.prod_descuento_promocion = '0'
         instance.proveedor = data.get('proveedor',instance.proveedor)
         instance.talla = data.get('talla', instance.talla)
         instance.color = data.get('color', instance.color)

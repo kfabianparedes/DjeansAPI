@@ -162,11 +162,11 @@ class ProductoRegistrarSerializer(Serializer):
             raise serializers.ValidationError("El precio de venta base no puede ser 0 o menor que 0.")
 
     def validate_prod_descuento_promocion(self, value):
-
-            if not value <= 0:
-                return value
-            else:
-                raise serializers.ValidationError("El valor del descuento no puede ser 0 o menor que 0.")
+            if value != -1:
+                if not value <= 0:
+                    return value
+                else:
+                    raise serializers.ValidationError("El valor del descuento no puede ser 0 o menor que 0.")
 
     def validate_prod_precio_venta(self, value):
 
@@ -262,7 +262,12 @@ class ProductoRegistrarSerializer(Serializer):
         prod_precio_compra = data.get('prod_precio_compra')
         prod_precio_venta_base = data.get('prod_precio_venta_base')
         prod_precio_venta = data.get('prod_precio_venta')
-        prod_descuento_promocion = data.get('prod_descuento_promocion')
+
+        if data.get('prod_descuento_promoción') == -1:
+            prod_descuento_promocion = data.get('prod_descuento_promocion')
+        else:
+            prod_descuento_promocion = '0' ;
+
         proveedor = data.get('proveedor')
         color = data.get('color')
         modelo = data.get('modelo')
