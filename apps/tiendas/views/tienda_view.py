@@ -26,6 +26,8 @@ class TiendaView(GenericViewSet):
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         elif self.action == 'update':
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
+        elif self.action == 'retrieve':
+            permission_classes = [EstaAutenticadoPermission]
         else:
             permission_classes = [EstaAutenticadoPermission, SuperUsuarioPermission]
         return [permission() for permission in permission_classes]
@@ -42,6 +44,15 @@ class TiendaView(GenericViewSet):
                 return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, tiendas_serializers.data, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
+
+    def retrieve(self, request, pk=None):
+        try:
+            id_tienda = self.kwargs['pk']
+            queryset = models.Tienda.objects.filter(tie_id=id_tienda)
+            tienda_serializer = TiendaSerializer(queryset, many=True)
+            return respuestaJson(status.HTTP_200_OK,SUCCESS_MESSAGE,tienda_serializer.data, True)
+        except DatabaseError:
+            return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR,message=BD_ERROR_MESSAGE)
 
     def create(self, request):
         try:
