@@ -48,7 +48,7 @@ class ProductoView(GenericViewSet):
         try:
             registrar_producto_serializer = ProductoRegistrarSerializer(data=request.data)
             if registrar_producto_serializer.is_valid():
-                if registrar_producto_serializer.data.get('prod_precio_compra') >= registrar_producto_serializer.data.get('prod_precio_venta'):
+                if float(registrar_producto_serializer.data.get('prod_precio_compra')) >= float(registrar_producto_serializer.data.get('prod_precio_venta')):
                     return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                          message="El precio de compra no puede ser mayor o igual al precio de venta.")
 
