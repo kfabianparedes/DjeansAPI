@@ -23,6 +23,8 @@ BASE_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Django Filters
+    'django_filters'
 ]
 
 LOCAL_APPS = [
@@ -48,6 +50,7 @@ THIRD_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
@@ -115,7 +118,10 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'core.assets.permissions.user_permission.IsAuthenticated',
     ],
-    'USER_DETAILS_SERIALIZER': 'apps.usuarios.serializers.usuario_serializer.UsuarioSerializer'
+    'USER_DETAILS_SERIALIZER': 'apps.usuarios.serializers.usuario_serializer.UsuarioSerializer',
+
+    'DEFAULT_FILTER_BACKENDS':['django_filters.rest_framework.DjangoFilterBackend']
+    # 'PAGE_SIZE':3
 }
 
 SIMPLE_JWT = {
