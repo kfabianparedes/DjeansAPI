@@ -4,6 +4,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework.decorators import action
 
+from apps.usuarios.models import Usuario
+from apps.usuarios.serializers.usuario.usuario_serializer import UsuarioSerializer
+
+
 from django.db import DatabaseError
 from rest_framework import status
 from apps.compras.models import Compra
@@ -35,13 +39,24 @@ class ReporteCompraView(GenericViewSet):
                 print("XXXXXXXXXXXXXXXXXX")
                 fechaIni=request.query_params.get('fechaIni',None)
                 fechaFin=request.query_params.get('fechaFin',None)
+                print("Fecha Inicio: ",fechaIni)
+                print("Fecha Fin: ", fechaFin)
                 # fechaIni='2022-04-04'
                 # fechaFin='2022-06-30'
                 fechaActual=datetime.today().strftime('%Y-%m-%d')
                 print("FECHA ACTUAL ----> ", fechaActual)
                 listaTotal=Compra.objects.filter(comp_fecha_registro__range=(fechaIni,fechaFin))
                 reporteCompra_serializer=CompraSerializer(listaTotal,many=True)
-                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, reporteCompra_serializer.data, True)        
+                listaCompras = []
+
+                for reporteCompra_data in reporteCompra_serializer.data:
+                    usuario_queryset = Usuario.objects.get(id=reporteCompra_data.get('usuario'))
+                    usuario_serializer = UsuarioSerializer(usuario_queryset)
+                    reporteCompra_data["usuario_descripcion"] = usuario_serializer.data['username']
+                    listaCompras.append(reporteCompra_data)
+
+
+                return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, listaCompras, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR,message=BD_ERROR_MESSAGE)
     

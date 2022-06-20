@@ -5,7 +5,13 @@ from django.db import DatabaseError
 from rest_framework import status
 
 from apps.compras import models
+from apps.usuarios import models as usuariosModels
 from apps.compras.models import Compra
+
+from apps.usuarios.models import Usuario
+from apps.usuarios.serializers.usuario.usuario_serializer import UsuarioSerializer
+
+
 from apps.compras.serializers.compras_serializer import CompraSerializer
 from apps.compras.serializers.registrar_compra_serializer import CompraRegistrarSerializer
 from apps.detalles_de_compra.serializers.registrar_detalle_de_compra_serializer import \
@@ -35,8 +41,15 @@ class CompraView(GenericViewSet):
     def list(self, request):
         try:
             queryset = models.Compra.objects.all().order_by('-comp_fecha_registro')
-            productos_serializer = CompraSerializer(queryset, many=True)
-            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, productos_serializer.data, True)
+            compra_serializer = CompraSerializer(queryset, many=True)
+            listaCompras = []
+            for compra_data in compra_serializer.data:
+                usuario_queryset = Usuario.objects.get(id=compra_data.get('usuario'))
+                usuario_serializer = UsuarioSerializer(usuario_queryset)
+                compra_data["usuario_descripcion"] = usuario_serializer.data['username']
+                listaCompras.append(compra_data)
+
+            return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, listaCompras, True)
         except DatabaseError:
             return respuestaJson(code=status.HTTP_500_INTERNAL_SERVER_ERROR, message=BD_ERROR_MESSAGE)
 
