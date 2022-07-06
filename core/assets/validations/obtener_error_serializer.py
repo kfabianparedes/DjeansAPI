@@ -53,3 +53,9 @@ def validarCaracteresAlnumconEspaciosGuionesNumeralesPuntos(value):
     if re.match(r"[a-zñáéíóú\-.# A-ZÑÁÉÍÓÚ 0-9]+$", str(value)):
         return True
     return False
+
+def validarNumeroSerie(value):
+    if re.match(r"^[BbFf]\d{3}", str(value)):
+        return True
+    return False
+

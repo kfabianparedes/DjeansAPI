@@ -43,7 +43,9 @@ LOCAL_APPS = [
     'apps.compras',
     'apps.detalles_de_compra',
     'apps.tipo_comprobante',
-    'apps.inventarios'
+    'apps.inventarios',
+    'apps.nota_de_ingreso',
+    'apps.detalles_de_ingreso'
 ]
 
 THIRD_APPS = [
@@ -55,7 +57,7 @@ THIRD_APPS = [
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:4200',
 )

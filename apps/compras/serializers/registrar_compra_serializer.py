@@ -7,7 +7,7 @@ from apps.proveedores.models import Proveedor
 from apps.tipo_comprobante.models import TipoComprobante
 from apps.usuarios.models import Usuario
 
-from core.assets.validations.obtener_error_serializer import validarEsNumerico
+from core.assets.validations.obtener_error_serializer import validarEsNumerico, validarNumeroSerie
 
 
 class CompraRegistrarSerializer(Serializer):
@@ -61,18 +61,21 @@ class CompraRegistrarSerializer(Serializer):
             raise serializers.ValidationError("El monto total de compra no puede ser 0 o menor que 0.")
 
     def validate_comp_serie(self, value):
-        if validarEsNumerico(value):
+        if validarNumeroSerie(value):
             if len(str.strip(value)) == 4:
+                print(len(value))
                 return value
             raise serializers.ValidationError("La cantidad de caracteres del número de serie debe ser 4.")
         else:
-            raise serializers.ValidationError("El número serie del comprobante de compra tiene que ser numérico.")
+            raise serializers.ValidationError("El número serie del comprobante de compra tiene que empezar con B o F "
+                                              "seguido de 3 dígitos numéricos.")
 
     def validate_comp_numero(self, value):
         if validarEsNumerico(value):
-            if len(str.strip(value)) == 4:
+            if 4 <= len(str.strip(value)) <= 8:
                 return value
-            raise serializers.ValidationError("La cantidad de caracteres del número de comprobante debe ser 4.")
+            raise serializers.ValidationError("La cantidad de caracteres del número de comprobante debe tener entre 4 "
+                                              "y 8 dígitos.")
         else:
             raise serializers.ValidationError("El número del comprobante de compra tiene que ser numérico.")
 

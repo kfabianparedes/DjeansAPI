@@ -5,7 +5,6 @@ from django.db import DatabaseError
 from rest_framework import status
 
 from apps.compras import models
-from apps.usuarios import models as usuariosModels
 from apps.compras.models import Compra
 
 from apps.usuarios.models import Usuario
