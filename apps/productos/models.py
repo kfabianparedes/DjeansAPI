@@ -10,7 +10,6 @@ class Producto(models.Model):
     prod_precio_venta_base = models.DecimalField(verbose_name='Precio de venta base', max_digits = 5 , decimal_places = 2)
     prod_precio_venta = models.DecimalField(verbose_name='Precio de venta', max_digits = 5 , decimal_places = 2)
     prod_descuento_promocion = models.DecimalField(verbose_name='Descuento o promoción', max_digits = 5, decimal_places = 2)
-
     proveedor = models.IntegerField(verbose_name='Proveedor',blank=False,null=False)
     categoria = models.IntegerField(verbose_name='Categoría',blank=False,null=False)
     marca = models.IntegerField(verbose_name='Marca',blank=False,null=False)

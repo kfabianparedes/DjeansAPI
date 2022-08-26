@@ -44,8 +44,8 @@ def validarCaracteresAlfabeticoConEspaciosNumerosGuiones(value):
         return True
     return False
 
-def validarCaracteresAlfanumericosGuiones(value):
-    if re.match(r"[a-zñáéíóú\- A-ZÑÁÉÍÓÚ0-9]+$", str(value)):
+def validarNombresProductos(value):
+    if re.match(r"[A-Za-z0-9 ,.?!%&()@$-_:;\'\\]+$", str(value)):
         return True
     return False
 

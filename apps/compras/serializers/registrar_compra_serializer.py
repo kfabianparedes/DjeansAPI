@@ -11,7 +11,7 @@ from core.assets.validations.obtener_error_serializer import validarEsNumerico, 
 
 
 class CompraRegistrarSerializer(Serializer):
-    comp_importe_total = serializers.DecimalField(max_digits=5, decimal_places=2,
+    comp_importe_total = serializers.DecimalField(max_digits=10, decimal_places=2,
                                                   error_messages={
                                                       "required": "El monto de compra es requerido.",
                                                       "blank": "El monto de compra no debe estar vacío",

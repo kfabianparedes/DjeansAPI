@@ -6,7 +6,7 @@ from apps.tipo_comprobante.models import TipoComprobante
 
 class Compra(models.Model):
     comp_id = models.AutoField(primary_key=True)
-    comp_importe_total = models.DecimalField(verbose_name='Monto total', max_digits=5, decimal_places=2)
+    comp_importe_total = models.DecimalField(verbose_name='Monto total', max_digits=10, decimal_places=2)
     comp_fecha_emision = models.DateField("Fecha emisión")
     comp_fecha_registro = models.DateField("Fecha registro", default=timezone.now)
     comp_serie = models.CharField(verbose_name='Nro. Serie', max_length=8)

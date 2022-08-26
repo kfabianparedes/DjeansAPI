@@ -11,7 +11,7 @@ from apps.colores.models import Color
 
 from core.assets.validations.obtener_error_serializer import validarCaracteresAlfaNumericos
 
-from core.assets.validations.obtener_error_serializer import validarEsNumerico,validarCaracteresAlfanumericosGuiones
+from core.assets.validations.obtener_error_serializer import validarEsNumerico,validarNombresProductos
 
 
 class ProductoRegistrarSerializer(Serializer):
@@ -112,7 +112,7 @@ class ProductoRegistrarSerializer(Serializer):
         if len(value) == 0 :
             return value
         if len(value) == 6:
-            if validarCaracteresAlfanumericosGuiones(value):
+            if validarNombresProductos(value):
                 prod_codigo = Producto.objects.filter(prod_codigo=value)
                 if not prod_codigo.exists():
                     return value
@@ -127,7 +127,7 @@ class ProductoRegistrarSerializer(Serializer):
 
         if len(str.strip(value))>= 5:
             if len(value) <= 100:
-                if validarCaracteresAlfanumericosGuiones(value):
+                if validarNombresProductos(value):
                     prod_descripcion = Producto.objects.filter(prod_descripcion=value)
                     if not prod_descripcion.exists():
                         return value
