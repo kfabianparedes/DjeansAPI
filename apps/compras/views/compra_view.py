@@ -70,16 +70,15 @@ class CompraView(GenericViewSet):
                             return respuestaJson(code=status.HTTP_400_BAD_REQUEST,
                                                  message=obtenerErrorSerializer(detalle))
                         detalle.save()
-
-                    guia_remision = request.data.get('guia_remision')
-                    if guia_remision:
-                        guia_remision["compra"] = purchase.data.get('comp_id')
-                        guia = GuiaDeRemisionRegistrarSerializer(data=guia_remision)
-                        if not guia.is_valid():
-                            transaction.set_rollback(rollback=True)
-                            return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(guia))
-                        guia.save()
-                    return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, purchase.data, success=True)
+                    # guia_remision = request.data.get('guia_remision')
+                    # if guia_remision:
+                    #     guia_remision["compra"] = purchase.data.get('comp_id')
+                    #     guia = GuiaDeRemisionRegistrarSerializer(data=guia_remision)
+                    #     if not guia.is_valid():
+                    #         transaction.set_rollback(rollback=True)
+                    #         return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(guia))
+                    #     guia.save()
+                    # return respuestaJson(status.HTTP_200_OK, SUCCESS_MESSAGE, purchase.data, success=True)
             else:
                 return respuestaJson(code=status.HTTP_400_BAD_REQUEST, message=obtenerErrorSerializer(compra))
         except DatabaseError:
